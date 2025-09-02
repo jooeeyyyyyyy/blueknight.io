@@ -368,11 +368,6 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 .feature-item.is-active {
     opacity: 1;
 }
-@media (max-width: 1023px) {
-    .feature-item.is-active {
-        background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-    }
-}
 .feature-item h3 { margin-bottom: var(--space-sm); text-align: center;}
 .feature-item p { color: var(--color-text-muted); text-align: center;}
 .slider-controls {
