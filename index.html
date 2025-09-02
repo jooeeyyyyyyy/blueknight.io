@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueKnight | AI-Driven Platform for M&A Advisors</title>
+    <meta name="description" content="BlueKnight is an AI-driven platform for M&A advisors - backed by an exclusive network of dealmakers. Supercharge your deal flow.">
+
+    <link rel="canonical" href="https://www.blueknight.io/">
+    <meta property="og:title" content="BlueKnight | AI-Driven Platform for M&A Advisors">
+    <meta property="og:description" content="BlueKnight is an AI-driven platform for M&A advisors - backed by an exclusive network of dealmakers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.blueknight.io/">
+    <meta property="og:image" content="https://www.blueknight.io/assets/social-card.png"> <meta name="twitter:card" content="summary_large_image">
+    
+    <link rel="icon" href="/assets/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" type="module" defer></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-mobile">
+                <button class="theme-toggle" aria-label="Toggle light and dark theme">
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <a href="/" class="logo" aria-label="BlueKnight Home">
+                    <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
+                </a>
+                <button class="nav-toggle" aria-controls="mobile-nav-panel" aria-expanded="false" aria-label="Toggle navigation menu">
+                    <span class="icon-open">☰</span>
+                    <span class="icon-close">×</span>
+                </button>
+            </div>
+
+            <div class="header-desktop">
+                <a href="/" class="logo" aria-label="BlueKnight Home">
+                    <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
+                </a>
+                <nav class="main-nav" aria-label="Main navigation">
+                    <ul>
+                        <li><a href="#why-bk">Why BlueKnight?</a></li>
+                        <li><a href="#product-showcase">Platform</a></li>
+                        <li><a href="#team">Our Team</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <button class="theme-toggle" aria-label="Toggle light and dark theme">
+                        <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <a href="#contact" class="button button-primary">Get in touch</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobile-nav-panel" class="mobile-nav-panel">
+        <ul>
+            <li><a href="#why-bk">Why BlueKnight?</a></li>
+            <li><a href="#product-showcase">Platform</a></li>
+            <li><a href="#team">Our Team</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
+    </div>
+
+    <main id="main-content">
+        <section id="hero" class="hero-section">
+            <div class="container hero-content">
+                <h1 class="hero-title">AI-driven platform for M&A advisors</h1>
+                <p class="hero-subtitle">Find the Right Buyers for Your Clients faster—Maximize Deal Value with BlueKnight.</p>
+                <div class="hero-cta">
+                    <a href="#contact" class="button button-primary button-large">
+                        <span>Schedule Your Free Consultation</span>
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-bg-animation" aria-hidden="true">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </section>
+
+        <section id="clients" class="clients-section">
+            <div class="container">
+                <h2 class="section-eyebrow text-center">As Seen On</h2>
+                <div class="client-logos">
+                    <img src="assets/logo-forbes.svg" alt="Forbes logo" width="120" height="30">
+                    <img src="assets/logo-entrepreneur.svg" alt="Entrepreneur logo" width="150" height="30">
+                    <img src="assets/logo-inc.svg" alt="Inc. Magazine logo" width="80" height="30">
+                    <img src="assets/logo-finance-mag.svg" alt="Finance Mag logo" width="150" height="30">
+                </div>
+            </div>
+        </section>
+
+        <section id="why-bk" class="services-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Why BlueKnight?</h2>
+                </div>
+                <div class="services-grid">
+                    <article class="service-card">
+                        <div class="service-icon-placeholder" aria-hidden="true"></div>
+                        <h3>AI-Driven Deal Sourcing</h3>
+                        <p>Our platform analyzes thousands of data points to identify off-market opportunities tailored to your investment thesis.</p>
+                    </article>
+                    <article class="service-card">
+                        <div class="service-icon-placeholder" aria-hidden="true"></div>
+                        <h3>Exclusive Network</h3>
+                        <p>Access a curated network of dealmakers, including private equity firms, corporate buyers, and investment banks.</p>
+                    </article>
+                    <article class="service-card">
+                        <div class="service-icon-placeholder" aria-hidden="true"></div>
+                        <h3>Streamlined Workflow</h3>
+                        <p>Manage your deal pipeline from sourcing to closing with our intuitive and secure platform.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="product-showcase" class="product-showcase-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">See BlueKnight in Action</h2>
+                    <p class="section-subtitle">A closer look at the tools that power your M&A workflow.</p>
+                </div>
+                <div class="showcase-grid">
+                    <div class="showcase-visuals">
+                        <div class="visual-wrapper">
+                            <img src="assets/showcase-1.gif" alt="AI-powered dashboard showing potential acquisition targets." id="showcase-image">
+                        </div>
+                    </div>
+                    <div class="slider-wrapper">
+                        <div class="features-slider" role="region" aria-label="Product Features">
+                            <article class="feature-item" data-image="assets/showcase-1.gif" role="group" aria-label="Slide 1 of 4">
+                                <h3>AI-Powered Target Screening</h3>
+                                <p>Go beyond standard filters. Our AI analyzes sentiment, team growth, tech stacks, and more to find targets that perfectly match your thesis before they're on the market.</p>
+                            </article>
+                            <article class="feature-item" data-image="assets/showcase-2.gif" role="group" aria-label="Slide 2 of 4">
+                                <h3>Automated Diligence Checklists</h3>
+                                <p>Generate dynamic due diligence checklists based on the target's industry and risk profile. Track progress, assign tasks, and securely manage documents in one centralized data room.</p>
+                            </article>
+                            <article class="feature-item" data-image="assets/showcase-3.gif" role="group" aria-label="Slide 3 of 4">
+                                <h3>Valuation Modeling Suite</h3>
+                                <p>Leverage real-time market data to build robust valuation models. Compare DCF, precedent transactions, and public comps seamlessly within the platform to triangulate value with confidence.</p>
+                            </article>
+                            <!--
+                             <article class="feature-item" data-image="assets/showcase-4.png" role="group" aria-label="Slide 4 of 4">
+                                <h3>Collaborative Deal Pipeline</h3>
+                                <p>Move deals through stages with a clear, visual pipeline. Collaborate with your team, manage communications, and generate reports for stakeholders with a single click.</p>
+                            </article>
+                            -->
+                        </div>
+                        <div class="slider-controls">
+                            <button class="slider-button prev" aria-label="Previous Feature">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <button class="slider-button next" aria-label="Next Feature">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
+                        <div class="slider-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="process-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">How it works</h2>
+                </div>
+                <div class="process-graphic-placeholder">
+                    <p>Placeholder for Process Circle Diagram</p>
+                </div>
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h3>Define Your Thesis</h3>
+                        <p>Tell us your investment criteria, and our AI will get to work.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h3>Review Opportunities</h3>
+                        <p>Receive a curated list of off-market deals that match your thesis.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h3>Connect with Dealmakers</h3>
+                        <p>Engage with relevant parties through our secure platform.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h3>Close the Deal</h3>
+                        <p>Leverage our tools and network to streamline due diligence and close deals faster.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Trusted by Leading M&A Advisors</h2>
+                </div>
+                <div class="testimonials-grid">
+                    <figure class="testimonial-card">
+                        <blockquote>
+                            <p>"BlueKnight has been a game-changer for our deal flow. The quality of opportunities is unparalleled, and the platform has saved us hundreds of hours in sourcing."</p>
+                        </blockquote>
+                        <figcaption>
+                            <cite>Jane Doe, Partner at Innovate Capital</cite>
+                        </figcaption>
+                    </figure>
+                    <figure class="testimonial-card">
+                        <blockquote>
+                            <p>"The exclusive network is BlueKnight's superpower. We've connected with buyers we simply wouldn't have found through traditional channels."</p>
+                        </blockquote>
+                        <figcaption>
+                            <cite>John Smith, Managing Director at Summit Partners</cite>
+                        </figcaption>
+                    </figure>
+                    <figure class="testimonial-card">
+                        <blockquote>
+                            <p>"A truly indispensable tool for the modern M&A advisor. The efficiency gains are massive, allowing us to focus on what we do best: closing deals."</p>
+                        </blockquote>
+                        <figcaption>
+                            <cite>Emily White, VP at Apex Advisory Group</cite>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="team-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Meet the Team</h2>
+                    <p class="section-subtitle">The architects of the future of dealmaking.</p>
+                </div>
+                <div class="team-grid">
+                    <article class="team-card">
+                        <img src="assets/team-1.png" alt="Photo of Michael Chen">
+                        <h3>Michael Chen</h3>
+                        <p class="team-title">Co-Founder & CEO</p>
+                        <p>A former investment banker with a passion for disrupting traditional finance through technology.</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="assets/team-2.png" alt="Photo of Dr. Anya Sharma">
+                        <h3>Dr. Anya Sharma</h3>
+                        <p class="team-title">Co-Founder & CTO</p>
+                        <p>Leads our engineering team with a Ph.D. in AI and over a decade of experience in machine learning.</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="assets/team-3.png" alt="Photo of David Lee">
+                        <h3>David Lee</h3>
+                        <p class="team-title">Head of Product</p>
+                        <p>Expert in user-centric design, ensuring the BlueKnight platform is powerful yet intuitive.</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="assets/team-3.png" alt="Photo of David Lee">
+                        <h3>David Lee</h3>
+                        <p class="team-title">Head of Product</p>
+                        <p>Expert in user-centric design, ensuring the BlueKnight platform is powerful yet intuitive.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                </div>
+                <div class="faq-accordion">
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1">
+                            <span>Who is BlueKnight for?</span>
+                            <span class="faq-icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="faq-answer-1" class="faq-answer" hidden>
+                            <p>BlueKnight is designed for M&A advisors, private equity firms, investment bankers, and corporate development teams who want to find and close deals more efficiently.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2">
+                            <span>How does the AI sourcing work?</span>
+                            <span class="faq-icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="faq-answer-2" class="faq-answer" hidden>
+                            <p>Our proprietary AI analyzes a vast array of public and private data sources to identify companies that match your specific investment thesis, including criteria that isn't publicly available. This allows us to surface unique, off-market opportunities.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3">
+                            <span>Is the platform secure?</span>
+                            <span class="faq-icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="faq-answer-3" class="faq-answer" hidden>
+                            <p>Yes. Security is our top priority. Our platform is built with enterprise-grade security protocols, including end-to-end encryption and secure data storage, to ensure all your information and deal flow remain confidential.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="contact-content">
+                    <h2 class="section-title">Ready to supercharge your deal flow?</h2>
+                    <p class="section-subtitle">Get in touch to learn how BlueKnight can help you source and close more deals, faster.</p>
+                </div>
+                <form id="contact-form" class="contact-form" novalidate>
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required autocomplete="name">
+                        <p class="error-message" aria-live="polite"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Work Email</label>
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                        <p class="error-message" aria-live="polite"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company" autocomplete="organization">
+                         <p class="error-message" aria-live="polite"></p>
+                    </div>
+                    <button type="submit" class="button button-primary button-large">Schedule a Demo</button>
+                    <div id="form-status" role="status"></div>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="/" class="logo" aria-label="BlueKnight Home">
+                        <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
+                    </a>
+                    <p>AI-driven platform for M&A advisors.</p>
+                </div>
+                <nav class="footer-nav" aria-label="Footer navigation">
+                    <h4>Navigate</h4>
+                    <ul>
+                        <li><a href="#why-bk">Why BlueKnight?</a></li>
+                        <li><a href="#product-showcase">Platform</a></li>
+                        <li><a href="#team">Our Team</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="footer-social">
+                    <h4>Connect</h4>
+                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                    <a href="#" aria-label="Twitter">Twitter</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-left">
+                    <p>&copy; 2025 BlueKnight. All rights reserved.</p>
+                    <nav class="footer-legal-nav" aria-label="Legal">
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="privacy.html">Privacy Policy</a>
+                    </nav>
+                </div>
+                <a href="#top" class="back-to-top">Back to top ↑</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
