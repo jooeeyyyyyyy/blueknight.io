@@ -36,7 +36,7 @@
                     <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                     <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                 </button>
-                <a href="https://jooeeyyyyyyy.github.io/blueknight.io/" class="logo" aria-label="BlueKnight Home">
+                <a href="index.html" class="logo" aria-label="BlueKnight Home">
                     <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
                 </a>
                 <button class="nav-toggle" aria-controls="mobile-nav-panel" aria-expanded="false" aria-label="Toggle navigation menu">
@@ -46,14 +46,15 @@
             </div>
 
             <div class="header-desktop">
-                <a href="https://jooeeyyyyyyy.github.io/blueknight.io/" class="logo" aria-label="BlueKnight Home">
+                <a href="index.html" class="logo" aria-label="BlueKnight Home">
                     <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
                 </a>
                 <nav class="main-nav" aria-label="Main navigation">
                     <ul>
-                        <li><a href="#why-bk">Why BlueKnight?</a></li>
-                        <li><a href="#product-showcase">Platform</a></li>
-                        <li><a href="#team">Our Team</a></li>
+                        <li><a href="#platform-features">Platform</a></li>
+                        <li><a href="#benefits">Benefits</a></li>
+                        <li><a href="#technology">Technology</a></li>
+                        <!-- <li><a href="#team">Our Team</a></li> -->
                         <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#faq">FAQ</a></li>
                     </ul>
@@ -71,9 +72,10 @@
 
     <div id="mobile-nav-panel" class="mobile-nav-panel">
         <ul>
-            <li><a href="#why-bk">Why BlueKnight?</a></li>
-            <li><a href="#product-showcase">Platform</a></li>
-            <li><a href="#team">Our Team</a></li>
+            <li><a href="#platform-features">Platform</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#technology">Technology</a></li>
+            <!-- <li><a href="#team">Our Team</a></li> -->
             <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#faq">FAQ</a></li>
         </ul>
@@ -98,43 +100,113 @@
             </div>
         </section>
 
-        <section id="clients" class="clients-section">
+        <section id="single-quote" class="quote-section">
             <div class="container">
-                <h2 class="section-eyebrow text-center">As Seen On</h2>
-                <div class="client-logos">
-                    <img src="assets/logo-forbes.svg" alt="Forbes logo" width="120" height="30">
-                    <img src="assets/logo-entrepreneur.svg" alt="Entrepreneur logo" width="150" height="30">
-                    <img src="assets/logo-inc.svg" alt="Inc. Magazine logo" width="80" height="30">
-                    <img src="assets/logo-finance-mag.svg" alt="Finance Mag logo" width="150" height="30">
-                </div>
+                <figure class="quote-figure">
+                    <blockquote>
+                        <p>"BlueKnight transformed our deal flow. We're closing deals 40% faster with higher quality matches than ever before."</p>
+                    </blockquote>
+                    <figcaption>
+                        <cite>Sarah Chen, Managing Partner, Velocity Ventures</cite>
+                    </figcaption>
+                </figure>
             </div>
         </section>
-
-        <section id="why-bk" class="services-section">
+        <section id="platform-features" class="platform-features-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Why BlueKnight?</h2>
+                    <h2 class="section-title">End-to-End AI for Your Workflow</h2>
+                    <p class="section-subtitle">From sourcing to closing, BlueKnight integrates AI into every critical step of the M&A process.</p>
                 </div>
-                <div class="services-grid">
-                    <article class="service-card">
-                        <div class="service-icon-placeholder" aria-hidden="true"></div>
-                        <h3>AI-Driven Deal Sourcing</h3>
-                        <p>Our platform analyzes thousands of data points to identify off-market opportunities tailored to your investment thesis.</p>
-                    </article>
-                    <article class="service-card">
-                        <div class="service-icon-placeholder" aria-hidden="true"></div>
-                        <h3>Exclusive Network</h3>
-                        <p>Access a curated network of dealmakers, including private equity firms, corporate buyers, and investment banks.</p>
-                    </article>
-                    <article class="service-card">
-                        <div class="service-icon-placeholder" aria-hidden="true"></div>
-                        <h3>Streamlined Workflow</h3>
-                        <p>Manage your deal pipeline from sourcing to closing with our intuitive and secure platform.</p>
-                    </article>
+
+                <div class="tabs-component">
+                    <div class="tabs-nav-container">
+                        <button class="tabs-nav-button prev" aria-label="Previous Feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="tabs-nav" role="tablist" aria-label="Platform Features">
+                            <button role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" class="tab-button">AI Deal Sourcing</button>
+                            <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" class="tab-button" tabindex="-1">Intelligent Buyer Matching</button>
+                            <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" class="tab-button" tabindex="-1">Automated Diligence Prep</button>
+                            <button role="tab" aria-selected="false" aria-controls="panel-4" id="tab-4" class="tab-button" tabindex="-1">Secure Data Rooms</button>
+                            <button role="tab" aria-selected="false" aria-controls="panel-5" id="tab-5" class="tab-button" tabindex="-1">Workflow Automation</button>
+                        </div>
+                        <button class="tabs-nav-button next" aria-label="Next Feature">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+
+                    <div class="tab-panels">
+                        <div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1" class="tab-panel">
+                            <div class="panel-content-grid">
+                                <div class="panel-image-wrapper">
+                                    <img src="assets/platform-feature-1.png" alt="Dashboard showing AI-sourced deal opportunities.">
+                                </div>
+                                <div class="panel-text-content">
+                                    <p class="content-eyebrow">UNCOVER HIDDEN OPPORTUNITIES</p>
+                                    <h3>Proprietary AI Sourcing Engine</h3>
+                                    <p>Go beyond public listings. Our AI analyzes thousands of proprietary and public data points—from financial reports to industry trends—to identify off-market companies that perfectly match your investment thesis.</p>
+                                    <a href="#contact" class="link-arrow">Learn More <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" class="tab-panel" hidden>
+                            <div class="panel-content-grid">
+                                <div class="panel-image-wrapper">
+                                    <img src="assets/platform-feature-2.png" alt="Interface displaying buyer match scores.">
+                                </div>
+                                <div class="panel-text-content">
+                                    <p class="content-eyebrow">DATA-DRIVEN MATCHMAKING</p>
+                                    <h3>Find the Perfect Buyer, Faster</h3>
+                                    <p>Our platform doesn't just find buyers; it finds the *right* buyers. We generate a quantitative Match Rank for each potential acquirer based on strategic fit, acquisition history, and financial capacity.</p>
+                                     <a href="#contact" class="link-arrow">Learn More <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" class="tab-panel" hidden>
+                            <div class="panel-content-grid">
+                                <div class="panel-image-wrapper">
+                                    <img src="assets/platform-feature-3.png" alt="AI analyzing documents for due diligence.">
+                                </div>
+                                <div class="panel-text-content">
+                                    <p class="content-eyebrow">STREAMLINE DUE DILIGENCE</p>
+                                    <h3>Automated Diligence Preparation</h3>
+                                    <p>Dramatically reduce the time spent on diligence. BlueKnight's AI automatically identifies, extracts, and organizes key financial and legal information, flagging potential risks and inconsistencies for your review.</p>
+                                     <a href="#contact" class="link-arrow">Learn More <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="panel-4" role="tabpanel" tabindex="0" aria-labelledby="tab-4" class="tab-panel" hidden>
+                            <div class="panel-content-grid">
+                                <div class="panel-image-wrapper">
+                                    <img src="assets/platform-feature-4.png" alt="Secure data room interface with access controls.">
+                                </div>
+                                <div class="panel-text-content">
+                                    <p class="content-eyebrow">ENTERPRISE-GRADE SECURITY</p>
+                                    <h3>Intelligent & Secure Data Rooms</h3>
+                                    <p>Manage the entire deal process with confidence. Our platform includes integrated, bank-grade secure data rooms with granular access controls, activity tracking, and AI-powered Q&A to ensure confidentiality and efficiency.</p>
+                                     <a href="#contact" class="link-arrow">Learn More <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="panel-5" role="tabpanel" tabindex="0" aria-labelledby="tab-5" class="tab-panel" hidden>
+                            <div class="panel-content-grid">
+                                <div class="panel-image-wrapper">
+                                    <img src="assets/platform-feature-5.png" alt="Visual workflow automation builder.">
+                                </div>
+                                <div class="panel-text-content">
+                                    <p class="content-eyebrow">ENHANCE EFFICIENCY</p>
+                                    <h3>Custom Workflow Automation</h3>
+                                    <p>Eliminate repetitive tasks and focus on high-value activities. From automated outreach sequences to generating reports, BlueKnight's workflow tools allow you to build and customize processes that fit your firm's unique approach.</p>
+                                     <a href="#contact" class="link-arrow">Learn More <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-
+        
         <section id="product-showcase" class="product-showcase-section">
             <div class="container">
                 <div class="section-header">
@@ -161,13 +233,7 @@
                                 <h3>Interrogate Your Results in the AI Playgrounds</h3>
                                 <p>Interact with our platform like you would with an expert analyst. Our unique AI Playground is where your analysis truly comes to life. After generating an initial list of buyers, you can select specific companies and move them into this interactive space. Use the Playground's powerful conversational interface to ask direct, follow-up questions about the selected businesses.This chat-based feature allows you to instantly get the deep context and validation you need, turning a static list into a dynamic research session and helping you build a more robust, data-backed strategy</p>
                             </article>
-                            <!--
-                             <article class="feature-item" data-image="assets/showcase-4.png" role="group" aria-label="Slide 4 of 4">
-                                <h3>Collaborative Deal Pipeline</h3>
-                                <p>Move deals through stages with a clear, visual pipeline. Collaborate with your team, manage communications, and generate reports for stakeholders with a single click.</p>
-                            </article>
-                            -->
-                        </div>
+                            </div>
                         <div class="slider-controls">
                             <button class="slider-button prev" aria-label="Previous Feature">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -182,13 +248,10 @@
             </div>
         </section>
 
-        <section id="how-it-works" class="process-section">
+        <section id="benefits" class="process-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">How it works</h2>
-                </div>
-                <div class="process-graphic-placeholder">
-                    <p>Placeholder for Process Circle Diagram</p>
+                    <h2 class="section-title">Benefits</h2>
                 </div>
                 <div class="process-steps">
                     <div class="process-step">
@@ -210,6 +273,112 @@
                         <div class="step-number">4</div>
                         <h3>Close the Deal</h3>
                         <p>Leverage our tools and network to streamline due diligence and close deals faster.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="walkthrough" class="walkthrough-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Your Path to the Perfect Buyer</h2>
+                    <p class="section-subtitle">Our 5-step process, powered by AI, turns complex market data into a clear, actionable buyer list.</p>
+                </div>
+                <div class="walkthrough-slider-wrapper">
+                    <div class="walkthrough-slider" role="region" aria-label="Walkthrough Steps">
+                        <article class="walkthrough-step" role="group" aria-label="Step 1 of 5">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <h3>Create Advisor Form</h3>
+                            </div>
+                            <p class="step-description">Submit target company details and provide comprehensive information to ensure optimal buyer matching.</p>
+                            <ul class="step-features">
+                                <li>Company profile & financials</li>
+                                <li>Strategic objectives</li>
+                            </ul>
+                        </article>
+                        <article class="walkthrough-step" role="group" aria-label="Step 2 of 5">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <h3>Analyze Transactions</h3>
+                            </div>
+                            <p class="step-description">AI-powered matching analyzes comparable deals to establish benchmarks and rank potential buyers.</p>
+                            <ul class="step-features">
+                                <li>AI configuration matching</li>
+                                <li>Buyer relevance ranking</li>
+                            </ul>
+                        </article>
+                        <article class="walkthrough-step" role="group" aria-label="Step 3 of 5">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <h3>Identify Strategic Buyers</h3>
+                            </div>
+                            <p class="step-description">Identify companies seeking synergies, market expansion, or specific strategic capabilities.</p>
+                            <ul class="step-features">
+                                <li>AI playground comparison</li>
+                                <li>Financial performance data</li>
+                            </ul>
+                        </article>
+                        <article class="walkthrough-step" role="group" aria-label="Step 4 of 5">
+                            <div class="step-header">
+                                <div class="step-number">4</div>
+                                <h3>Find Financial Buyers</h3>
+                            </div>
+                            <p class="step-description">Identify private equity and similar firms with matching investment thesis and criteria.</p>
+                            <ul class="step-features">
+                                <li>Interactive AI agent chat</li>
+                                <li>Investment history analysis</li>
+                            </ul>
+                        </article>
+                        <article class="walkthrough-step" role="group" aria-label="Step 5 of 5">
+                            <div class="step-header">
+                                <div class="step-number">5</div>
+                                <h3>Target Acquisitive Buyers</h3>
+                            </div>
+                            <p class="step-description">Identify growth-focused acquirers and companies actively seeking acquisitions for market expansion.</p>
+                            <ul class="step-features">
+                                <li>Acquisition history analysis</li>
+                                <li>Growth strategy alignment</li>
+                            </ul>
+                        </article>
+                    </div>
+                    <div class="slider-controls">
+                        <button class="slider-button prev" aria-label="Previous Step">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="slider-button next" aria-label="Next Step">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="slider-pagination"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="technology-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Our Technology</h2>
+                    <p class="section-subtitle">Built by M&A professionals for M&A professionals, leveraging cutting-edge AI and machine learning</p>
+                </div>
+                <div class="technology-grid">
+                    <div class="technology-content">
+                        <article class="technology-item">
+                            <h3>M&A Industry Expertise</h3>
+                            <p>Our team comes directly from the M&A industry, bringing decades of combined experience in investment banking, private equity, and corporate development. We understand the nuances of deal-making because we've lived it.</p>
+                        </article>
+                        <article class="technology-item">
+                            <h3>AI-Powered Intelligence</h3>
+                            <p>Our proprietary algorithms analyze market data, company financials, and industry trends to identify the most relevant opportunities and provide actionable insights for your deals.</p>
+                        </article>
+                        <article class="technology-item">
+                            <h3>Real-Time Market Data</h3>
+                            <p>Access live market intelligence, comparable transactions, and valuation metrics to make informed decisions and negotiate from a position of strength.</p>
+                        </article>
+                    </div>
+                    <div class="technology-preview">
+                        <img src="assets/gemini-technology.png" alt="Technology Preview" >
+                        <p>Technology Preview</p>
                     </div>
                 </div>
             </div>
@@ -249,7 +418,7 @@
             </div>
         </section>
 
-        <section id="team" class="team-section">
+        <!-- <section id="team" class="team-section">
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Meet the Team</h2>
@@ -282,7 +451,7 @@
                     </article>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <section id="faq" class="faq-section">
             <div class="container">
@@ -354,7 +523,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-about">
-                    <a href="https://jooeeyyyyyyy.github.io/blueknight.io/" class="logo" aria-label="BlueKnight Home">
+                    <a href="index.html" class="logo" aria-label="BlueKnight Home">
                         <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
                     </a>
                     <p>AI-driven platform for M&A advisors.</p>
@@ -362,9 +531,10 @@
                 <nav class="footer-nav" aria-label="Footer navigation">
                     <h4>Navigate</h4>
                     <ul>
-                        <li><a href="#why-bk">Why BlueKnight?</a></li>
-                        <li><a href="#product-showcase">Platform</a></li>
-                        <li><a href="#team">Our Team</a></li>
+                        <li><a href="#platform-features">Platform</a></li>
+                        <li><a href="#benefits">Benefits</a></li>
+                        <li><a href="#technology">Technology</a></li>
+                        <!-- <li><a href="#team">Our Team</a></li> -->
                         <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#faq">FAQ</a></li>
                         <li><a href="#contact">Contact</a></li>

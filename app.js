@@ -96,6 +96,89 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedSections.forEach(section => observer.observe(section));
     };
     
+    const initPlatformTabs = () => {
+        const tabComponents = document.querySelectorAll('.tabs-component');
+        if (tabComponents.length === 0) return;
+
+        tabComponents.forEach(component => {
+            const tabList = component.querySelector('[role="tablist"]');
+            const tabs = Array.from(component.querySelectorAll('[role="tab"]'));
+            const panels = Array.from(component.querySelectorAll('[role="tabpanel"]'));
+            const prevButton = component.querySelector('.tabs-nav-button.prev');
+            const nextButton = component.querySelector('.tabs-nav-button.next');
+
+            if (!tabList || tabs.length === 0) return;
+
+            const switchTab = (oldTab, newTab) => {
+                newTab.focus();
+                newTab.removeAttribute('tabindex');
+                newTab.setAttribute('aria-selected', 'true');
+                oldTab.removeAttribute('aria-selected');
+                oldTab.setAttribute('tabindex', '-1');
+                
+                const oldPanelId = oldTab.getAttribute('aria-controls');
+                const newPanelId = newTab.getAttribute('aria-controls');
+                const oldPanel = component.querySelector(`#${oldPanelId}`);
+                const newPanel = component.querySelector(`#${newPanelId}`);
+
+                if (oldPanel && newPanel) {
+                    oldPanel.hidden = true;
+                    newPanel.hidden = false;
+                }
+
+                newTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            };
+
+            tabList.addEventListener('click', e => {
+                const clickedTab = e.target.closest('[role="tab"]');
+                if (!clickedTab) return;
+
+                const currentTab = tabList.querySelector('[aria-selected="true"]');
+                if (clickedTab !== currentTab) {
+                    switchTab(currentTab, clickedTab);
+                }
+            });
+
+            tabList.addEventListener('keydown', e => {
+                const currentIndex = tabs.findIndex(tab => tab === e.target);
+                let targetIndex;
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    targetIndex = (currentIndex + 1) % tabs.length;
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    targetIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                }
+
+                if (targetIndex !== undefined) {
+                    switchTab(tabs[currentIndex], tabs[targetIndex]);
+                }
+            });
+
+            const updateNavButtonsState = () => {
+                if (!prevButton || !nextButton) return;
+                const scrollEnd = Math.ceil(tabList.scrollWidth - tabList.scrollLeft) <= tabList.clientWidth + 1;
+                
+                prevButton.disabled = tabList.scrollLeft <= 0;
+                nextButton.disabled = scrollEnd;
+            };
+
+            if (prevButton && nextButton) {
+                prevButton.addEventListener('click', () => {
+                    tabList.scrollLeft -= tabList.clientWidth * 0.75;
+                });
+                nextButton.addEventListener('click', () => {
+                    tabList.scrollLeft += tabList.clientWidth * 0.75;
+                });
+
+                tabList.addEventListener('scroll', updateNavButtonsState, { passive: true });
+                const resizeObserver = new ResizeObserver(() => updateNavButtonsState());
+                resizeObserver.observe(tabList);
+            }
+        });
+    };
+
     const initProductShowcase = () => {
         const section = document.getElementById('product-showcase');
         if (!section) return;
@@ -112,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let paginationDots = [];
     
-        // Create pagination dots
         if (paginationContainer) {
             slides.forEach((_, index) => {
                 const dot = document.createElement('button');
@@ -127,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     
         const updateShowcase = (activeIndex) => {
-            // Update image
             const activeSlide = slides[activeIndex];
+            if (!activeSlide) return;
             const newImageSrc = activeSlide.dataset.image;
             if (imageEl.src !== newImageSrc) {
                 imageEl.style.opacity = '0';
@@ -139,24 +221,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 150);
             }
     
-            // Update active class on slides
             slides.forEach((slide, index) => {
                 slide.classList.toggle('is-active', index === activeIndex);
             });
 
-            // Update pagination dots
             paginationDots.forEach((dot, index) => {
                 dot.classList.toggle('is-active', index === activeIndex);
             });
     
-            // Update button states
             if (prevButton && nextButton) {
                 prevButton.disabled = activeIndex === 0;
                 nextButton.disabled = activeIndex === totalSlides - 1;
             }
         };
     
-        // Observer to detect which slide is currently in view
         const slideObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -166,13 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }, {
-            root: slider, // Observe within the slider itself
-            threshold: 0.51 // Trigger when more than 51% of the slide is visible
+            root: slider,
+            threshold: 0.51
         });
     
         slides.forEach(slide => slideObserver.observe(slide));
     
-        // Event listeners for desktop buttons
         if (prevButton && nextButton) {
             prevButton.addEventListener('click', () => {
                 slider.scrollLeft -= slider.clientWidth;
@@ -183,8 +260,123 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     
-        // Initial state setup
         setTimeout(() => updateShowcase(0), 100);
+    };
+
+    const initWalkthroughSlider = () => {
+        const section = document.getElementById('walkthrough');
+        if (!section) return;
+
+        const sliderWrapper = section.querySelector('.walkthrough-slider-wrapper');
+        const slider = sliderWrapper.querySelector('.walkthrough-slider');
+        const slides = Array.from(slider.querySelectorAll('.walkthrough-step'));
+        const prevButton = sliderWrapper.querySelector('.slider-button.prev');
+        const nextButton = sliderWrapper.querySelector('.slider-button.next');
+        const paginationContainer = sliderWrapper.querySelector('.slider-pagination');
+        let paginationDots = [];
+
+        // 1. Pagination
+        if (paginationContainer) {
+            slides.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.classList.add('pagination-dot');
+                dot.setAttribute('aria-label', `Go to step ${index + 1}`);
+                dot.addEventListener('click', () => {
+                    const targetSlide = slides[index];
+                    const targetScrollLeft = targetSlide.offsetLeft - slider.offsetLeft;
+                    slider.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                });
+                paginationContainer.appendChild(dot);
+                paginationDots.push(dot);
+            });
+        }
+        
+        const updatePagination = () => {
+            if (paginationDots.length === 0) return;
+            let closestSlideIndex = 0;
+            let minDistance = Infinity;
+            const scrollLeft = slider.scrollLeft;
+            const containerWidth = slider.clientWidth;
+            
+            // Handle edge cases first
+            if (scrollLeft <= 10) {
+                closestSlideIndex = 0;
+            } else if (scrollLeft >= slider.scrollWidth - containerWidth - 10) {
+                closestSlideIndex = slides.length - 1;
+            } else {
+                // For middle positions, find the slide that's most visible
+                const scrollCenter = scrollLeft + containerWidth / 2;
+                slides.forEach((slide, index) => {
+                    const slideLeft = slide.offsetLeft;
+                    const slideRight = slideLeft + slide.offsetWidth;
+                    const slideCenter = slideLeft + slide.offsetWidth / 2;
+                    
+                    // Check if slide is at least partially visible
+                    const isVisible = slideRight > scrollLeft && slideLeft < scrollLeft + containerWidth;
+                    
+                    if (isVisible) {
+                        const distance = Math.abs(slideCenter - scrollCenter);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestSlideIndex = index;
+                        }
+                    }
+                });
+            }
+            
+            paginationDots.forEach((dot, index) => dot.classList.toggle('is-active', index === closestSlideIndex));
+        };
+        
+        // 2. Button State & Scroll Logic
+        const updateButtons = () => {
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+            prevButton.disabled = slider.scrollLeft < 10;
+            nextButton.disabled = slider.scrollLeft > maxScroll - 10;
+        };
+
+        const getScrollAmount = () => {
+            const slide = slider.querySelector('.walkthrough-step');
+            if (!slide) return 0;
+            const style = window.getComputedStyle(slide.parentElement);
+            const gap = parseFloat(style.gap) || 24;
+            return slide.offsetWidth + gap;
+        };
+
+        prevButton.addEventListener('click', () => slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }));
+        nextButton.addEventListener('click', () => slider.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }));
+        
+        // 3. Drag-to-swipe
+        let isDown = false, startX, scrollLeft;
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('is-dragging');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        ['mouseleave', 'mouseup'].forEach(event => slider.addEventListener(event, () => {
+            isDown = false;
+            slider.classList.remove('is-dragging');
+        }));
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        // 4. Observers and Initial Calls
+        slider.addEventListener('scroll', () => {
+            updateButtons();
+            updatePagination();
+        }, { passive: true });
+        new ResizeObserver(() => {
+            updateButtons();
+            updatePagination();
+        }).observe(slider);
+
+        updateButtons();
+        updatePagination();
     };
 
     const initFaqAccordion = () => {
@@ -249,15 +441,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             parent.classList.toggle('has-error', !isValid);
-            errorEl.textContent = errorMessage;
+            if (errorEl) errorEl.textContent = errorMessage;
             return isValid;
         };
         
-        form.addEventListener('input', e => validateField(e.target));
+        form.addEventListener('input', e => {
+            if (e.target.hasAttribute('required')) {
+                validateField(e.target);
+            }
+        });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fields = form.querySelectorAll('input[required]');
+            const fields = form.querySelectorAll('input[required], textarea[required]');
             const isFormValid = Array.from(fields).every(field => validateField(field));
 
             if (!isFormValid) {
@@ -294,7 +490,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileNav();
     initThemeToggle();
     initScrollAnimations();
+    initPlatformTabs();
     initProductShowcase();
+    initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
 });
