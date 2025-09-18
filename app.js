@@ -1,4 +1,4 @@
-/* * BlueKnight M&A Platform Redesign
+/* * BlueKnight M&A Platform Redesign 
  * app.js
  * * ES Module for all site interactions
  */
@@ -106,8 +106,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const panels = Array.from(component.querySelectorAll('[role="tabpanel"]'));
             const prevButton = component.querySelector('.tabs-nav-button.prev');
             const nextButton = component.querySelector('.tabs-nav-button.next');
+            const sliderPrevButton = component.querySelector('.slider-button.prev');
+            const sliderNextButton = component.querySelector('.slider-button.next');
+            const paginationContainer = component.querySelector('.slider-pagination');
+            let paginationDots = [];
 
             if (!tabList || tabs.length === 0) return;
+
+            // Create pagination dots
+            if (paginationContainer) {
+                tabs.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('pagination-dot');
+                    dot.setAttribute('aria-label', `Go to feature ${index + 1}`);
+                    dot.addEventListener('click', () => {
+                        const targetTab = tabs[index];
+                        const currentTab = tabList.querySelector('[aria-selected="true"]');
+                        if (targetTab !== currentTab) {
+                            switchTab(currentTab, targetTab);
+                        }
+                    });
+                    paginationContainer.appendChild(dot);
+                    paginationDots.push(dot);
+                });
+            }
+
+            const updatePagination = () => {
+                const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+                paginationDots.forEach((dot, index) => {
+                    dot.classList.toggle('is-active', index === currentIndex);
+                });
+                
+                if (sliderPrevButton && sliderNextButton) {
+                    sliderPrevButton.disabled = currentIndex === 0;
+                    sliderNextButton.disabled = currentIndex === tabs.length - 1;
+                }
+            };
 
             const switchTab = (oldTab, newTab) => {
                 newTab.focus();
@@ -122,11 +156,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newPanel = component.querySelector(`#${newPanelId}`);
 
                 if (oldPanel && newPanel) {
+                    // Pause video in old panel
+                    const oldVideo = oldPanel.querySelector('video');
+                    if (oldVideo) {
+                        oldVideo.pause();
+                    }
+                    
                     oldPanel.hidden = true;
                     newPanel.hidden = false;
+                    
+                    // Play video in new panel
+                    const newVideo = newPanel.querySelector('video');
+                    if (newVideo) {
+                        newVideo.currentTime = 0; // Reset to beginning
+                        newVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                    }
                 }
 
                 newTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                updatePagination();
             };
 
             tabList.addEventListener('click', e => {
@@ -176,6 +224,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resizeObserver = new ResizeObserver(() => updateNavButtonsState());
                 resizeObserver.observe(tabList);
             }
+
+            // Add slider button functionality
+            if (sliderPrevButton && sliderNextButton) {
+                sliderPrevButton.addEventListener('click', () => {
+                    const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+                    if (currentIndex > 0) {
+                        switchTab(tabs[currentIndex], tabs[currentIndex - 1]);
+                    }
+                });
+
+                sliderNextButton.addEventListener('click', () => {
+                    const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+                    if (currentIndex < tabs.length - 1) {
+                        switchTab(tabs[currentIndex], tabs[currentIndex + 1]);
+                    }
+                });
+            }
+            
+            // Initialize pagination and first video
+            updatePagination();
+            const firstPanel = component.querySelector('[role="tabpanel"]:not([hidden])');
+            if (firstPanel) {
+                const firstVideo = firstPanel.querySelector('video');
+                if (firstVideo) {
+                    firstVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                }
+            }
         });
     };
 
@@ -183,84 +258,96 @@ document.addEventListener('DOMContentLoaded', () => {
         const section = document.getElementById('product-showcase');
         if (!section) return;
     
-        const slider = section.querySelector('.features-slider');
-        const imageEl = section.querySelector('#showcase-image');
-        const slides = Array.from(slider.querySelectorAll('.feature-item'));
-        const prevButton = section.querySelector('.slider-button.prev');
-        const nextButton = section.querySelector('.slider-button.next');
-        const paginationContainer = section.querySelector('.slider-pagination');
-        const totalSlides = slides.length;
-    
-        if (!slider || !imageEl || slides.length === 0) return;
+        const component = section.querySelector('.showcase-tabs-component');
+        if (!component) return;
 
+        const panels = Array.from(component.querySelectorAll('[role="tabpanel"]'));
+        const prevButton = component.querySelector('.slider-button.prev');
+        const nextButton = component.querySelector('.slider-button.next');
+        const paginationContainer = component.querySelector('.slider-pagination');
         let paginationDots = [];
-    
+        let currentIndex = 0;
+
+        if (panels.length === 0) return;
+
+        // Create pagination dots
         if (paginationContainer) {
-            slides.forEach((_, index) => {
+            panels.forEach((_, index) => {
                 const dot = document.createElement('button');
                 dot.classList.add('pagination-dot');
                 dot.setAttribute('aria-label', `Go to feature ${index + 1}`);
                 dot.addEventListener('click', () => {
-                    slider.scrollLeft = index * slider.clientWidth;
+                    switchPanel(currentIndex, index);
                 });
                 paginationContainer.appendChild(dot);
                 paginationDots.push(dot);
             });
         }
-    
-        const updateShowcase = (activeIndex) => {
-            const activeSlide = slides[activeIndex];
-            if (!activeSlide) return;
-            const newImageSrc = activeSlide.dataset.image;
-            if (imageEl.src !== newImageSrc) {
-                imageEl.style.opacity = '0';
-                setTimeout(() => {
-                    imageEl.src = newImageSrc;
-                    imageEl.alt = activeSlide.querySelector('h3').textContent.trim();
-                    imageEl.style.opacity = '1';
-                }, 150);
-            }
-    
-            slides.forEach((slide, index) => {
-                slide.classList.toggle('is-active', index === activeIndex);
-            });
 
+        const updatePagination = () => {
             paginationDots.forEach((dot, index) => {
-                dot.classList.toggle('is-active', index === activeIndex);
+                dot.classList.toggle('is-active', index === currentIndex);
             });
-    
+            
             if (prevButton && nextButton) {
-                prevButton.disabled = activeIndex === 0;
-                nextButton.disabled = activeIndex === totalSlides - 1;
+                prevButton.disabled = currentIndex === 0;
+                nextButton.disabled = currentIndex === panels.length - 1;
             }
         };
-    
-        const slideObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const intersectingSlide = entry.target;
-                    const activeIndex = slides.indexOf(intersectingSlide);
-                    updateShowcase(activeIndex);
+
+        const switchPanel = (oldIndex, newIndex) => {
+            if (oldIndex === newIndex) return;
+
+            const oldPanel = panels[oldIndex];
+            const newPanel = panels[newIndex];
+
+            if (oldPanel && newPanel) {
+                // Pause video in old panel
+                const oldVideo = oldPanel.querySelector('video');
+                if (oldVideo) {
+                    oldVideo.pause();
                 }
-            });
-        }, {
-            root: slider,
-            threshold: 0.51
-        });
-    
-        slides.forEach(slide => slideObserver.observe(slide));
-    
+                
+                oldPanel.hidden = true;
+                newPanel.hidden = false;
+                newPanel.focus();
+                
+                // Play video in new panel
+                const newVideo = newPanel.querySelector('video');
+                if (newVideo) {
+                    newVideo.currentTime = 0; // Reset to beginning
+                    newVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                }
+            }
+
+            currentIndex = newIndex;
+            updatePagination();
+        };
+
+        // Add slider button functionality
         if (prevButton && nextButton) {
             prevButton.addEventListener('click', () => {
-                slider.scrollLeft -= slider.clientWidth;
+                if (currentIndex > 0) {
+                    switchPanel(currentIndex, currentIndex - 1);
+                }
             });
-    
+
             nextButton.addEventListener('click', () => {
-                slider.scrollLeft += slider.clientWidth;
+                if (currentIndex < panels.length - 1) {
+                    switchPanel(currentIndex, currentIndex + 1);
+                }
             });
         }
-    
-        setTimeout(() => updateShowcase(0), 100);
+        
+        // Initialize pagination and first video
+        updatePagination();
+        const firstPanel = panels[0];
+        if (firstPanel) {
+            const firstVideo = firstPanel.querySelector('video');
+            if (firstVideo) {
+                firstVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+            }
+        }
     };
 
     const initWalkthroughSlider = () => {
@@ -484,6 +571,62 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
+
+    const initVideoModal = () => {
+        const modal = document.getElementById('video-modal');
+        const modalVideo = document.getElementById('modal-video');
+        const closeButton = modal.querySelector('.video-modal-close');
+        
+        if (!modal || !modalVideo || !closeButton) return;
+
+        const openModal = (videoSrc) => {
+            modalVideo.src = videoSrc;
+            modalVideo.currentTime = 0;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus the close button for accessibility
+            setTimeout(() => closeButton.focus(), 100);
+            
+            // Play the video
+            modalVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+        };
+
+        const closeModal = () => {
+            modalVideo.pause();
+            modalVideo.src = '';
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        };
+
+        // Close button event
+        closeButton.addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
+        });
+
+        // Add click event to all videos
+        document.addEventListener('click', (e) => {
+            const video = e.target.closest('video');
+            if (video && video.src) {
+                e.preventDefault();
+                openModal(video.src);
+            }
+        });
+    };
     
     // Initialize all modules
     initHeader();
@@ -495,4 +638,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
+    initVideoModal();
 });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -140,7 +140,7 @@
                         <div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1" class="tab-panel">
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
-                                    <img src="assets/platform-feature-1.png" alt="Dashboard showing AI-sourced deal opportunities.">
+                                    <video src="assets/platform-feature-1.mp4" autoplay muted loop playsinline aria-label="Dashboard showing AI-sourced deal opportunities"></video>
                                 </div>
                                 <div class="panel-text-content">
                                     <p class="content-eyebrow">INSTANT CONTEXT FROM A SINGLE INPUT</p>
@@ -153,7 +153,7 @@
                         <div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" class="tab-panel" hidden>
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
-                                    <img src="assets/platform-feature-2.png" alt="Interface displaying buyer match scores.">
+                                    <video src="assets/platform-feature-2.mp4" autoplay muted loop playsinline aria-label="Interface displaying buyer match scores"></video>
                                 </div>
                                 <div class="panel-text-content">
                                     <p class="content-eyebrow">AUTOMATED M&A BENCHMARKING AT SCALE</p>
@@ -166,7 +166,7 @@
                         <div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" class="tab-panel" hidden>
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
-                                    <img src="assets/platform-feature-3.png" alt="AI analyzing documents for due diligence.">
+                                    <video src="assets/platform-feature-3.mp4" autoplay muted loop playsinline aria-label="AI analyzing documents for due diligence"></video>
                                 </div>
                                 <div class="panel-text-content">
                                     <p class="content-eyebrow">MULTI-LAYERED BUYER IDENTIFICATION</p>
@@ -185,7 +185,7 @@
                         <div id="panel-4" role="tabpanel" tabindex="0" aria-labelledby="tab-4" class="tab-panel" hidden>
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
-                                    <img src="assets/platform-feature-4.png" alt="Secure data room interface with access controls.">
+                                    <video src="assets/platform-feature-4.mp4" autoplay muted loop playsinline aria-label="Secure data room interface with access controls"></video>
                                 </div>
                                 <div class="panel-text-content">
                                     <p class="content-eyebrow">INSIGHTS THAT EXPLAIN THE “WHY”</p>
@@ -198,7 +198,7 @@
                         <div id="panel-5" role="tabpanel" tabindex="0" aria-labelledby="tab-5" class="tab-panel" hidden>
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
-                                    <img src="assets/platform-feature-5.png" alt="Visual workflow automation builder.">
+                                    <video src="assets/platform-feature-5.mp4" autoplay muted loop playsinline aria-label="Visual workflow automation builder"></video>
                                 </div>
                                 <div class="panel-text-content">
                                     <p class="content-eyebrow">DIRECT ACCESS TO DECISION MAKERS</p>
@@ -209,6 +209,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="slider-controls">
+                        <button class="slider-button prev" aria-label="Previous Feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="slider-button next" aria-label="Next Feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="slider-pagination"></div>
                 </div>
             </div>
         </section>
@@ -219,37 +228,52 @@
                     <h2 class="section-title">See BlueKnight in Action</h2>
                     <p class="section-subtitle">Customisable end to end. Powered by serious tech. Built for dealmakers.</p>
                 </div>
-                <div class="showcase-grid">
-                    <div class="showcase-visuals">
-                        <div class="visual-wrapper">
-                            <img src="assets/showcase-1.gif" alt="AI-powered dashboard showing potential acquisition targets." id="showcase-image">
-                        </div>
-                    </div>
-                    <div class="slider-wrapper">
-                        <div class="features-slider" role="region" aria-label="Product Features">
-                            <article class="feature-item" data-image="assets/showcase-1.gif" role="group" aria-label="Slide 1 of 4">
-                                <h3>Instant Access to Tailored Deal Comps, Valuations and Buyer Trends</h3>
-                                <p>Get a full market view in seconds, including the most relevant comparable transactions, detailed buyer analysis, and sector-specific valuation multiples. Results are ranked by strategic fit to your target and fully driven by your inputs. With configurable filters, weighting controls, and AI-tuned scoring, you're in full command of how comps are selected, how buyer patterns are revealed, and how value benchmarks are built.</p>
-                            </article>
-                            <article class="feature-item" data-image="assets/showcase-2.gif" role="group" aria-label="Slide 2 of 4">
-                                <h3>Use 3 Complementary Methods to Find and Prioritse Buyers</h3>
-                                <p>Identify buyers from three critical angles: strategic fit, portfolio relevance, and proven M&A behaviour. Each result is ranked by match strength and backed by rationale, giving you a focused, defensible shortlist aligned to your deal thesis.</p>
-                            </article>
-                            <article class="feature-item" data-image="assets/showcase-3.gif" role="group" aria-label="Slide 3 of 4">
-                                <h3>Real M&A Intelligence With Your Personal AI Playground</h3>
-                                <p>It’s like speaking to a seasoned dealmaker: trained by real transactions and backed by over 100 million qualitative data points. Dive deeper into specific buyers, ask follow-up questions, and test strategic logic in real time. The Playground turns static research into live, deal-focused dialogue.</p>
-                            </article>
+
+                <div class="showcase-tabs-component">
+                    <div class="showcase-panels">
+                        <div id="showcase-panel-1" role="tabpanel" tabindex="0" aria-labelledby="showcase-tab-1" class="showcase-panel">
+                            <div class="showcase-content">
+                                <div class="showcase-video-wrapper">
+                                    <video src="assets/showcase-1.mp4" autoplay muted loop playsinline aria-label="AI-powered dashboard showing potential acquisition targets"></video>
+                                </div>
+                                <div class="showcase-text-content">
+                                    <h3>Instant Access to Tailored Deal Comps, Valuations and Buyer Trends</h3>
+                                    <p>Get a full market view in seconds, including the most relevant comparable transactions, detailed buyer analysis, and sector-specific valuation multiples. Results are ranked by strategic fit to your target and fully driven by your inputs. With configurable filters, weighting controls, and AI-tuned scoring, you're in full command of how comps are selected, how buyer patterns are revealed, and how value benchmarks are built.</p>
+                                </div>
                             </div>
-                        <div class="slider-controls">
-                            <button class="slider-button prev" aria-label="Previous Feature">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                            </button>
-                            <button class="slider-button next" aria-label="Next Feature">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </button>
                         </div>
-                        <div class="slider-pagination"></div>
+                        <div id="showcase-panel-2" role="tabpanel" tabindex="0" aria-labelledby="showcase-tab-2" class="showcase-panel" hidden>
+                            <div class="showcase-content">
+                                <div class="showcase-video-wrapper">
+                                    <video src="assets/showcase-2.gif" autoplay muted loop playsinline aria-label="Interface showing buyer identification methods"></video>
+                                </div>
+                                <div class="showcase-text-content">
+                                    <h3>Use 3 Complementary Methods to Find and Prioritse Buyers</h3>
+                                    <p>Identify buyers from three critical angles: strategic fit, portfolio relevance, and proven M&A behaviour. Each result is ranked by match strength and backed by rationale, giving you a focused, defensible shortlist aligned to your deal thesis.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="showcase-panel-3" role="tabpanel" tabindex="0" aria-labelledby="showcase-tab-3" class="showcase-panel" hidden>
+                            <div class="showcase-content">
+                                <div class="showcase-video-wrapper">
+                                    <video src="assets/showcase-3.gif" autoplay muted loop playsinline aria-label="AI playground interface for M&A intelligence"></video>
+                                </div>
+                                <div class="showcase-text-content">
+                                    <h3>Real M&A Intelligence With Your Personal AI Playground</h3>
+                                    <p>It's like speaking to a seasoned dealmaker: trained by real transactions and backed by over 100 million qualitative data points. Dive deeper into specific buyers, ask follow-up questions, and test strategic logic in real time. The Playground turns static research into live, deal-focused dialogue.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div class="slider-controls">
+                        <button class="slider-button prev" aria-label="Previous Feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="slider-button next" aria-label="Next Feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="slider-pagination"></div>
                 </div>
             </div>
         </section>
@@ -308,7 +332,7 @@
                                 <div class="step-number">2</div>
                                 <h3>Analyse Transactions</h3>
                             </div>
-                            <p class="step-description">Review ranked precedent deals to benchmark strategic fit, market activity and valuation levels.
+                            <p class="step-description">Review ranked precedent deals to benchmark strategic fit, market activity and valuation levels.</p>
                             <ul class="step-features">
                                 <li>Strategic relevance</li>
                                 <li>Configurable scoring</li>
@@ -564,5 +588,15 @@
             </div>
         </div>
     </footer>
+
+    <!-- Video Modal -->
+    <div id="video-modal" class="video-modal" role="dialog" aria-label="Video Player" aria-hidden="true">
+        <div class="video-modal-content">
+            <button class="video-modal-close" aria-label="Close video">×</button>
+            <video id="modal-video" controls playsinline>
+                <!-- Video source will be set dynamically -->
+            </video>
+        </div>
+    </div>
 </body>
 </html>
