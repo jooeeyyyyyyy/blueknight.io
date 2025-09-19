@@ -1,4 +1,4 @@
-/* * BlueKnight M&A Platform Redesign 
+/* * BlueKnight M&A Platform Redesign  
  * styles.css
  * * Design Tokens, Base Styles, Components, and Responsive Layout
  */
@@ -1450,6 +1450,48 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 .panel-image-wrapper video:hover {
     transform: scale(1.02);
 }
+
+/* Video loading states */
+.panel-image-wrapper.loading::after,
+.showcase-video-wrapper.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 3px solid var(--glass-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 2;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Video error states */
+.panel-image-wrapper[title="Video unavailable"]::before,
+.showcase-video-wrapper[title="Video unavailable"]::before {
+    content: '⚠️ Video unavailable';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    z-index: 2;
+    border: 1px solid var(--glass-border);
+}
 .content-eyebrow {
     font-size: 0.8rem;
     font-weight: 700;
@@ -2532,6 +2574,21 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     object-fit: contain;
     max-height: 80vh;
     cursor: default;
+    background: #000;
+}
+
+/* Let browser use native video controls styling for better consistency */
+.video-modal video::-webkit-media-controls-panel {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+/* Fullscreen video controls enhancement */
+video:fullscreen {
+    background: #000;
+}
+
+video:fullscreen::-webkit-media-controls-panel {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
 }
 
 .video-modal-close {

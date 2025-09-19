@@ -1,4 +1,4 @@
-/* * BlueKnight M&A Platform Redesign 
+/* * BlueKnight M&A Platform Redesign  
  * app.js
  * * ES Module for all site interactions
  */
@@ -169,7 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const newVideo = newPanel.querySelector('video');
                     if (newVideo) {
                         newVideo.currentTime = 0; // Reset to beginning
-                        newVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                        // Enhanced play with better error handling
+                        const playPromise = newVideo.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                console.log('Video autoplay prevented:', e);
+                                // Ensure muted for autoplay compatibility
+                                newVideo.muted = true;
+                                newVideo.play().catch(err => console.log('Video play failed:', err));
+                            });
+                        }
                     }
                 }
 
@@ -248,7 +257,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstPanel) {
                 const firstVideo = firstPanel.querySelector('video');
                 if (firstVideo) {
-                    firstVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                    // Enhanced play with better error handling
+                    const playPromise = firstVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log('Video autoplay prevented:', e);
+                            // Ensure muted for autoplay compatibility
+                            firstVideo.muted = true;
+                            firstVideo.play().catch(err => console.log('Video play failed:', err));
+                        });
+                    }
                 }
             }
         });
@@ -316,7 +334,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newVideo = newPanel.querySelector('video');
                 if (newVideo) {
                     newVideo.currentTime = 0; // Reset to beginning
-                    newVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                    // Enhanced play with better error handling
+                    const playPromise = newVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log('Video autoplay prevented:', e);
+                            // Ensure muted for autoplay compatibility
+                            newVideo.muted = true;
+                            newVideo.play().catch(err => console.log('Video play failed:', err));
+                        });
+                    }
                 }
             }
 
@@ -345,7 +372,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (firstPanel) {
             const firstVideo = firstPanel.querySelector('video');
             if (firstVideo) {
-                firstVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                // Enhanced play with better error handling
+                const playPromise = firstVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        console.log('Video autoplay prevented:', e);
+                        // Ensure muted for autoplay compatibility
+                        firstVideo.muted = true;
+                        firstVideo.play().catch(err => console.log('Video play failed:', err));
+                    });
+                }
             }
         }
     };
@@ -572,44 +608,283 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const initVideoModal = () => {
+    const initVideoSystem = () => {
         const modal = document.getElementById('video-modal');
         const modalVideo = document.getElementById('modal-video');
         const closeButton = modal.querySelector('.video-modal-close');
         
         if (!modal || !modalVideo || !closeButton) return;
 
-        const openModal = (videoSrc) => {
-            modalVideo.src = videoSrc;
-            modalVideo.currentTime = 0;
-            modal.classList.add('is-open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+        // Helper function to detect mobile devices
+        const isMobileDevice = () => {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+        };
+
+        // Enhanced video loading with better error handling
+        const loadVideo = (video, src, isModal = false) => {
+            return new Promise((resolve, reject) => {
+                const handleLoad = () => {
+                    video.removeEventListener('loadeddata', handleLoad);
+                    video.removeEventListener('error', handleError);
+                    resolve(video);
+                };
+
+                const handleError = (e) => {
+                    video.removeEventListener('loadeddata', handleLoad);
+                    video.removeEventListener('error', handleError);
+                    console.warn('Video loading failed:', src, e);
+                    reject(e);
+                };
+
+                video.addEventListener('loadeddata', handleLoad);
+                video.addEventListener('error', handleError);
+
+                // Set video attributes based on context
+                if (isModal) {
+                    // For modal: enable controls, disable autoplay/loop, enable sound
+                    video.setAttribute('controls', 'true');
+                    video.setAttribute('preload', 'metadata');
+                    video.setAttribute('playsinline', 'true');
+                    video.removeAttribute('autoplay');
+                    video.removeAttribute('loop');
+                    video.muted = false; // Enable sound in modal
+                    video.loop = false; // Explicitly disable loop
+                } else {
+                    // For inline videos: keep original behavior
+                    video.setAttribute('preload', 'metadata');
+                    video.setAttribute('playsinline', 'true');
+                    video.muted = true; // Ensure muted for autoplay compatibility
+                }
+                
+                video.src = src;
+                video.load(); // Force reload
+            });
+        };
+
+        // Enhanced play function with better browser support
+        const playVideo = async (video, isModal = false) => {
+            try {
+                // Ensure video is ready
+                if (video.readyState < 2) {
+                    await new Promise(resolve => {
+                        const checkReady = () => {
+                            if (video.readyState >= 2) {
+                                resolve();
+                            } else {
+                                setTimeout(checkReady, 50);
+                            }
+                        };
+                        checkReady();
+                    });
+                }
+
+                // Reset video position
+                video.currentTime = 0;
+
+                // For modal videos with controls, don't auto-start - let user control playback
+                if (isModal && video.controls) {
+                    // Just prepare the video, let user control playback via controls
+                    return Promise.resolve();
+                }
+
+                // Play with promise handling (for inline videos or non-control modals)
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    return playPromise.catch(error => {
+                        console.warn('Video autoplay prevented:', error);
+                        // For non-modal videos, try to play without sound as fallback
+                        if (!isModal) {
+                            video.muted = true;
+                            return video.play();
+                        }
+                        return Promise.resolve();
+                    });
+                }
+                return Promise.resolve();
+            } catch (error) {
+                console.warn('Video play error:', error);
+                return Promise.reject(error);
+            }
+        };
+
+        // Helper function to prepare video for fullscreen with native controls
+        const prepareVideoForFullscreen = (video) => {
+            // Store original attributes
+            video.dataset.originalLoop = video.loop;
+            video.dataset.originalMuted = video.muted;
+            video.dataset.originalControls = video.controls;
+            video.dataset.originalAutoplay = video.autoplay;
             
-            // Focus the close button for accessibility
-            setTimeout(() => closeButton.focus(), 100);
-            
-            // Play the video
-            modalVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+            // Modify video for fullscreen/native controls
+            video.loop = false;
+            video.muted = false;
+            video.controls = true;
+            video.autoplay = false;
+            video.setAttribute('controls', 'true');
+            video.removeAttribute('loop');
+            video.removeAttribute('autoplay');
+        };
+
+        // Helper function to restore video to original state
+        const restoreVideoAttributes = (video) => {
+            if (video.dataset.originalLoop !== undefined) {
+                video.loop = video.dataset.originalLoop === 'true';
+                if (video.loop) {
+                    video.setAttribute('loop', 'true');
+                } else {
+                    video.removeAttribute('loop');
+                }
+                delete video.dataset.originalLoop;
+            }
+            if (video.dataset.originalMuted !== undefined) {
+                video.muted = video.dataset.originalMuted === 'true';
+                delete video.dataset.originalMuted;
+            }
+            if (video.dataset.originalControls !== undefined) {
+                const shouldHaveControls = video.dataset.originalControls === 'true';
+                video.controls = shouldHaveControls;
+                if (!shouldHaveControls) {
+                    video.removeAttribute('controls');
+                } else {
+                    video.setAttribute('controls', 'true');
+                }
+                delete video.dataset.originalControls;
+            }
+            if (video.dataset.originalAutoplay !== undefined) {
+                const shouldAutoplay = video.dataset.originalAutoplay === 'true';
+                video.autoplay = shouldAutoplay;
+                if (shouldAutoplay) {
+                    video.setAttribute('autoplay', 'true');
+                } else {
+                    video.removeAttribute('autoplay');
+                }
+                delete video.dataset.originalAutoplay;
+            }
+        };
+
+        // Helper function to enter fullscreen on mobile
+        const enterFullscreen = (video) => {
+            try {
+                if (video.requestFullscreen) {
+                    return video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    return video.webkitRequestFullscreen();
+                } else if (video.mozRequestFullScreen) {
+                    return video.mozRequestFullScreen();
+                } else if (video.msRequestFullscreen) {
+                    return video.msRequestFullscreen();
+                } else if (video.webkitEnterFullscreen) {
+                    // iOS Safari fallback
+                    return video.webkitEnterFullscreen();
+                }
+            } catch (error) {
+                console.warn('Fullscreen request failed:', error);
+            }
+            return Promise.resolve();
+        };
+
+        const openModal = async (videoSrc) => {
+            try {
+                // Load video with modal-specific settings
+                await loadVideo(modalVideo, videoSrc, true);
+                
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                
+                // Focus the close button for accessibility
+                setTimeout(() => closeButton.focus(), 100);
+                
+                // Play the video (will respect controls and not auto-start)
+                await playVideo(modalVideo, true);
+            } catch (error) {
+                console.error('Failed to open video modal:', error);
+                // Fallback: still show modal even if video fails
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
         };
 
         const closeModal = () => {
-            modalVideo.pause();
-            modalVideo.src = '';
+            try {
+                modalVideo.pause();
+                modalVideo.src = '';
+                modalVideo.load(); // Clear the video
+            } catch (error) {
+                console.warn('Error closing video:', error);
+            }
+            
             modal.classList.remove('is-open');
             modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
         };
 
+        // Initialize all videos on page load for better performance
+        const initializeVideos = () => {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                // Set optimal attributes for cross-browser compatibility
+                video.setAttribute('preload', 'metadata');
+                video.setAttribute('playsinline', 'true');
+                video.muted = true;
+                
+                // Add error handling
+                video.addEventListener('error', (e) => {
+                    console.warn('Video error:', video.currentSrc || 'unknown source', e);
+                    // Hide video container if it fails to load
+                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
+                    if (wrapper) {
+                        wrapper.style.opacity = '0.5';
+                        wrapper.setAttribute('title', 'Video unavailable');
+                    }
+                });
+
+                // Improve loading performance
+                video.addEventListener('loadstart', () => {
+                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.add('loading');
+                    }
+                });
+
+                video.addEventListener('loadeddata', () => {
+                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('loading');
+                    }
+                });
+
+                // Handle video source loading for better compatibility
+                video.addEventListener('loadedmetadata', () => {
+                    // Video metadata loaded successfully
+                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
+                    if (wrapper) {
+                        wrapper.classList.remove('loading');
+                    }
+                });
+            });
+        };
+
         // Close button event
         closeButton.addEventListener('click', closeModal);
 
-        // Close on backdrop click
+        // Close on backdrop click (but not on video click)
         modal.addEventListener('click', (e) => {
+            // Only close if clicking on the modal backdrop, not on the video or modal content
             if (e.target === modal) {
                 closeModal();
             }
         });
+
+        // Prevent modal from closing when clicking on video or modal content
+        const modalContent = modal.querySelector('.video-modal-content');
+        if (modalContent) {
+            modalContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
 
         // Close on escape key
         document.addEventListener('keydown', (e) => {
@@ -618,12 +893,94 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Add click event to all videos
-        document.addEventListener('click', (e) => {
+        // Enhanced video click handling
+        document.addEventListener('click', async (e) => {
             const video = e.target.closest('video');
-            if (video && video.src) {
+            if (video && (video.src || video.currentSrc || video.querySelector('source'))) {
                 e.preventDefault();
-                openModal(video.src);
+                
+                // Get video source (prioritize currentSrc, then src, then first source element)
+                const videoSrc = video.currentSrc || video.src || 
+                    (video.querySelector('source') && video.querySelector('source').src);
+                
+                if (!videoSrc) {
+                    console.warn('No video source found');
+                    return;
+                }
+                
+                // Check if it's a mobile device
+                if (isMobileDevice()) {
+                    try {
+                        // On mobile: prepare video for fullscreen with native controls
+                        prepareVideoForFullscreen(video);
+                        
+                        await playVideo(video);
+                        
+                        // Enter fullscreen after video starts playing
+                        setTimeout(async () => {
+                            try {
+                                await enterFullscreen(video);
+                            } catch (error) {
+                                console.warn('Fullscreen failed, continuing with inline playback');
+                                // Restore original attributes if fullscreen fails
+                                restoreVideoAttributes(video);
+                            }
+                        }, 200);
+                    } catch (error) {
+                        console.warn('Mobile video playback failed:', error);
+                        // Restore original attributes on error
+                        restoreVideoAttributes(video);
+                        // Fallback to modal even on mobile if direct playback fails
+                        openModal(videoSrc);
+                    }
+                } else {
+                    // On desktop: open modal
+                    openModal(videoSrc);
+                }
+            }
+        });
+
+        // Handle fullscreen exit events
+        const handleFullscreenExit = () => {
+            const isInFullscreen = !!(
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
+            );
+
+            if (!isInFullscreen) {
+                // Fullscreen exited, find and handle any playing videos (except modal video)
+                const videos = document.querySelectorAll('video');
+                videos.forEach(video => {
+                    if (!video.paused && video.id !== 'modal-video') {
+                        video.pause();
+                        
+                        // Restore original video attributes if they were modified for fullscreen
+                        restoreVideoAttributes(video);
+                    }
+                });
+            }
+        };
+
+        // Add fullscreen change listeners
+        document.addEventListener('fullscreenchange', handleFullscreenExit);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenExit);
+        document.addEventListener('mozfullscreenchange', handleFullscreenExit);
+        document.addEventListener('MSFullscreenChange', handleFullscreenExit);
+
+        // Initialize videos when DOM is ready
+        initializeVideos();
+
+        // Handle visibility changes to pause videos when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                const videos = document.querySelectorAll('video');
+                videos.forEach(video => {
+                    if (!video.paused) {
+                        video.pause();
+                    }
+                });
             }
         });
     };
@@ -638,5 +995,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
-    initVideoModal();
+    initVideoSystem();
 });
