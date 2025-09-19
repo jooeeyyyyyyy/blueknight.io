@@ -2100,36 +2100,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 /* Problem Statement Styling */
 .problem-statement {
     margin-bottom: var(--space-3xl);
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--border-radius-xl);
-    box-shadow: var(--glass-shadow);
     padding: var(--space-3xl) var(--space-2xl);
-    position: relative;
-    overflow: hidden;
-    transition: all var(--transition-base);
-}
-
-.problem-statement::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--glass-border) 50%, 
-        transparent 100%);
-    opacity: 0.6;
-}
-
-.problem-statement:hover {
-    transform: translateY(-2px) scale(1.005);
-    box-shadow: var(--glass-shadow-hover);
-    border-color: var(--glass-glow);
 }
 
 .problem-header {
@@ -2150,6 +2121,10 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 .problem-highlight {
     color: #ef4444;
     font-weight: 700;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 0rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .problem-points {
