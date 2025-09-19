@@ -617,9 +617,9 @@
     <div id="video-modal" class="video-modal" role="dialog" aria-label="Video Player" aria-hidden="true">
         <div class="video-modal-content">
             <button class="video-modal-close" aria-label="Close video">×</button>
-            <video id="modal-video" controls playsinline preload="metadata" controlslist="nodownload">
+            <video id="modal-video" controls playsinline preload="auto" controlslist="nodownload">
                 <!-- Video source will be set dynamically -->
-                <p>Your browser doesn't support HTML video.</p>
+                <p>Your browser doesn't support HTML video. Please try a different browser or <a href="#" id="fallback-link">download the video</a>.</p>
             </video>
         </div>
     </div>

@@ -156,28 +156,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newPanel = component.querySelector(`#${newPanelId}`);
 
                 if (oldPanel && newPanel) {
-                    // Pause video in old panel (but only if it's not the modal video)
+                    // Pause video in old panel (but only if modal is not open)
                     const oldVideo = oldPanel.querySelector('video');
-                    if (oldVideo && oldVideo.id !== 'modal-video' && !oldVideo.dataset.isModalVideo) {
-                        oldVideo.pause();
+                    if (oldVideo && oldVideo.id !== 'modal-video') {
+                        // Check if modal is open by looking for the global modal state
+                        const modal = document.getElementById('video-modal');
+                        const isModalCurrentlyOpen = modal && modal.classList.contains('is-open');
+                        if (!isModalCurrentlyOpen) {
+                            oldVideo.pause();
+                        }
                     }
                     
                     oldPanel.hidden = true;
                     newPanel.hidden = false;
                     
-                    // Play video in new panel (but only if it's not the modal video)
+                    // Play video in new panel (but only if modal is not open)
                     const newVideo = newPanel.querySelector('video');
-                    if (newVideo && newVideo.id !== 'modal-video' && !newVideo.dataset.isModalVideo) {
-                        newVideo.currentTime = 0; // Reset to beginning
-                        // Enhanced play with better error handling
-                        const playPromise = newVideo.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(e => {
-                                console.log('Video autoplay prevented:', e);
-                                // Ensure muted for autoplay compatibility
-                                newVideo.muted = true;
-                                newVideo.play().catch(err => console.log('Video play failed:', err));
-                            });
+                    if (newVideo && newVideo.id !== 'modal-video') {
+                        const modal = document.getElementById('video-modal');
+                        const isModalCurrentlyOpen = modal && modal.classList.contains('is-open');
+                        if (!isModalCurrentlyOpen) {
+                            newVideo.currentTime = 0; // Reset to beginning
+                            // Enhanced play with better error handling
+                            const playPromise = newVideo.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(e => {
+                                    console.log('Video autoplay prevented:', e);
+                                    // Ensure muted for autoplay compatibility
+                                    newVideo.muted = true;
+                                    newVideo.play().catch(err => console.log('Video play failed:', err));
+                                });
+                            }
                         }
                     }
                 }
@@ -320,29 +329,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPanel = panels[newIndex];
 
             if (oldPanel && newPanel) {
-                // Pause video in old panel (but only if it's not the modal video)
+                // Pause video in old panel (but only if modal is not open)
                 const oldVideo = oldPanel.querySelector('video');
-                if (oldVideo && oldVideo.id !== 'modal-video' && !oldVideo.dataset.isModalVideo) {
-                    oldVideo.pause();
+                if (oldVideo && oldVideo.id !== 'modal-video') {
+                    const modal = document.getElementById('video-modal');
+                    const isModalCurrentlyOpen = modal && modal.classList.contains('is-open');
+                    if (!isModalCurrentlyOpen) {
+                        oldVideo.pause();
+                    }
                 }
                 
                 oldPanel.hidden = true;
                 newPanel.hidden = false;
                 newPanel.focus();
                 
-                // Play video in new panel (but only if it's not the modal video)
+                // Play video in new panel (but only if modal is not open)
                 const newVideo = newPanel.querySelector('video');
-                if (newVideo && newVideo.id !== 'modal-video' && !newVideo.dataset.isModalVideo) {
-                    newVideo.currentTime = 0; // Reset to beginning
-                    // Enhanced play with better error handling
-                    const playPromise = newVideo.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(e => {
-                            console.log('Video autoplay prevented:', e);
-                            // Ensure muted for autoplay compatibility
-                            newVideo.muted = true;
-                            newVideo.play().catch(err => console.log('Video play failed:', err));
-                        });
+                if (newVideo && newVideo.id !== 'modal-video') {
+                    const modal = document.getElementById('video-modal');
+                    const isModalCurrentlyOpen = modal && modal.classList.contains('is-open');
+                    if (!isModalCurrentlyOpen) {
+                        newVideo.currentTime = 0; // Reset to beginning
+                        // Enhanced play with better error handling
+                        const playPromise = newVideo.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                console.log('Video autoplay prevented:', e);
+                                // Ensure muted for autoplay compatibility
+                                newVideo.muted = true;
+                                newVideo.play().catch(err => console.log('Video play failed:', err));
+                            });
+                        }
                     }
                 }
             }
@@ -615,223 +632,316 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!modal || !modalVideo || !closeButton) return;
 
+        // Global state for modal
+        let isModalOpen = false;
+        let backgroundVideos = [];
+
+        // Show play button overlay when autoplay fails
+        const showPlayButtonOverlay = (video) => {
+            const videoContainer = video.closest('.video-modal-content');
+            if (!videoContainer || videoContainer.querySelector('.play-overlay')) return;
+
+            const overlay = document.createElement('div');
+            overlay.className = 'play-overlay';
+            overlay.innerHTML = `
+                <button class="play-overlay-button" aria-label="Play video">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                </button>
+            `;
+            
+            overlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                backdrop-filter: blur(2px);
+                border-radius: var(--border-radius-xl);
+            `;
+            
+            const button = overlay.querySelector('.play-overlay-button');
+            button.style.cssText = `
+                background: rgba(255, 255, 255, 0.9);
+                border: none;
+                border-radius: 50%;
+                width: 80px;
+                height: 80px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                color: #000;
+            `;
+            
+            button.addEventListener('click', async () => {
+                try {
+                    video.muted = false;
+                    await video.play();
+                    overlay.remove();
+                    console.log('Video started via overlay button');
+                } catch (error) {
+                    console.warn('Manual play failed:', error);
+                }
+            });
+            
+            button.addEventListener('mouseenter', () => {
+                button.style.transform = 'scale(1.1)';
+                button.style.background = 'rgba(255, 255, 255, 1)';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+                button.style.background = 'rgba(255, 255, 255, 0.9)';
+            });
+            
+            videoContainer.appendChild(overlay);
+        };
+
         // Helper function to detect mobile devices
         const isMobileDevice = () => {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                    (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
         };
 
+        // Pause all background videos when modal opens
+        const pauseAllBackgroundVideos = () => {
+            backgroundVideos = [];
+            const videos = document.querySelectorAll('video:not(#modal-video)');
+            videos.forEach(video => {
+                if (!video.paused) {
+                    backgroundVideos.push({
+                        element: video,
+                        wasPlaying: true,
+                        currentTime: video.currentTime
+                    });
+                    video.pause();
+                } else {
+                    backgroundVideos.push({
+                        element: video,
+                        wasPlaying: false,
+                        currentTime: video.currentTime
+                    });
+                }
+            });
+            console.log('Paused', backgroundVideos.filter(v => v.wasPlaying).length, 'background videos');
+        };
+
+        // Resume background videos when modal closes (only if they were playing)
+        const resumeBackgroundVideos = () => {
+            backgroundVideos.forEach(videoData => {
+                const video = videoData.element;
+                if (videoData.wasPlaying && video && !video.paused === false) {
+                    try {
+                        video.currentTime = videoData.currentTime;
+                        const playPromise = video.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                console.log('Background video resume failed:', e);
+                            });
+                        }
+                    } catch (error) {
+                        console.log('Error resuming background video:', error);
+                    }
+                }
+            });
+            backgroundVideos = [];
+            console.log('Attempted to resume background videos');
+        };
+
         // Enhanced video loading with better error handling
-        const loadVideo = (video, src, isModal = false) => {
+        const loadVideo = (video, src) => {
             return new Promise((resolve, reject) => {
                 const handleLoad = () => {
                     video.removeEventListener('loadeddata', handleLoad);
                     video.removeEventListener('error', handleError);
+                    video.removeEventListener('canplaythrough', handleCanPlay);
+                    resolve(video);
+                };
+
+                const handleCanPlay = () => {
+                    video.removeEventListener('loadeddata', handleLoad);
+                    video.removeEventListener('error', handleError);
+                    video.removeEventListener('canplaythrough', handleCanPlay);
                     resolve(video);
                 };
 
                 const handleError = (e) => {
                     video.removeEventListener('loadeddata', handleLoad);
                     video.removeEventListener('error', handleError);
+                    video.removeEventListener('canplaythrough', handleCanPlay);
                     console.warn('Video loading failed:', src, e);
                     reject(e);
                 };
 
                 video.addEventListener('loadeddata', handleLoad);
+                video.addEventListener('canplaythrough', handleCanPlay);
                 video.addEventListener('error', handleError);
 
-                // Set video attributes based on context
-                if (isModal) {
-                    // For modal: enable controls, disable autoplay/loop, enable sound
-                    video.setAttribute('controls', 'true');
-                    video.setAttribute('preload', 'metadata');
-                    video.setAttribute('playsinline', 'true');
-                    video.removeAttribute('autoplay');
-                    video.removeAttribute('loop');
-                    video.muted = false; // Enable sound in modal
-                    video.loop = false; // Explicitly disable loop
-                } else {
-                    // For inline videos: keep original behavior
-                    video.setAttribute('preload', 'metadata');
-                    video.setAttribute('playsinline', 'true');
-                    video.muted = true; // Ensure muted for autoplay compatibility
-                }
+                // Configure modal video for optimal playback with autoplay support
+                video.setAttribute('controls', 'true');
+                video.setAttribute('preload', 'auto');
+                video.setAttribute('playsinline', 'true');
+                video.removeAttribute('autoplay'); // We'll handle autoplay programmatically
+                video.removeAttribute('loop');
+                
+                // Start muted for better autoplay compatibility, we'll unmute after play starts
+                video.muted = true;
+                video.loop = false;
+                video.autoplay = false;
                 
                 video.src = src;
-                video.load(); // Force reload
+                video.load();
             });
         };
 
-        // Enhanced play function with better browser support
-        const playVideo = async (video, isModal = false) => {
+        // Robust modal video play function with autoplay
+        const playModalVideo = async (video) => {
             try {
-                // Ensure video is ready
-                if (video.readyState < 2) {
-                    await new Promise(resolve => {
+                // Wait for video to be ready
+                if (video.readyState < 3) {
+                    await new Promise((resolve) => {
                         const checkReady = () => {
-                            if (video.readyState >= 2) {
+                            if (video.readyState >= 3) {
                                 resolve();
                             } else {
-                                setTimeout(checkReady, 50);
+                                setTimeout(checkReady, 100);
                             }
                         };
                         checkReady();
                     });
                 }
 
-                // Reset video position
+                // Reset to beginning
                 video.currentTime = 0;
 
-                // For modal videos with controls, don't auto-start - let user control playback
-                if (isModal && video.controls) {
-                    // Just prepare the video, let user control playback via controls
-                    return Promise.resolve();
-                }
-
-                // Play with promise handling (for inline videos or non-control modals)
+                // Auto-play the modal video (start muted, then try to unmute)
+                console.log('Starting modal video autoplay');
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
-                    return playPromise.catch(error => {
-                        console.warn('Video autoplay prevented:', error);
-                        // For non-modal videos, try to play without sound as fallback
-                        if (!isModal) {
-                            video.muted = true;
-                            return video.play();
-                        }
+                    return playPromise.then(() => {
+                        console.log('Modal video started playing');
+                        // Try to unmute after successful play start
+                        setTimeout(() => {
+                            try {
+                                video.muted = false;
+                                console.log('Modal video unmuted successfully');
+                            } catch (error) {
+                                console.warn('Could not unmute video:', error);
+                            }
+                        }, 500); // Small delay to ensure playback is stable
                         return Promise.resolve();
+                    }).catch(error => {
+                        console.warn('Modal video autoplay failed:', error);
+                        // If muted autoplay fails, try without sound
+                        video.muted = true;
+                        return video.play().then(() => {
+                            console.log('Modal video playing muted (user can unmute via controls)');
+                            return Promise.resolve();
+                        }).catch(err => {
+                            console.warn('All autoplay attempts failed:', err);
+                            console.log('User can manually start playback via controls');
+                            // Show a subtle play button overlay if autoplay completely fails
+                            showPlayButtonOverlay(video);
+                            return Promise.resolve();
+                        });
                     });
                 }
                 return Promise.resolve();
             } catch (error) {
-                console.warn('Video play error:', error);
-                return Promise.reject(error);
+                console.warn('Modal video setup error:', error);
+                return Promise.resolve();
             }
         };
 
-        // Helper function to prepare video for fullscreen with native controls
-        const prepareVideoForFullscreen = (video) => {
-            // Store original attributes
-            video.dataset.originalLoop = video.loop;
-            video.dataset.originalMuted = video.muted;
-            video.dataset.originalControls = video.controls;
-            video.dataset.originalAutoplay = video.autoplay;
-            
-            // Modify video for fullscreen/native controls
-            video.loop = false;
-            video.muted = false;
-            video.controls = true;
-            video.autoplay = false;
-            video.setAttribute('controls', 'true');
-            video.removeAttribute('loop');
-            video.removeAttribute('autoplay');
-        };
-
-        // Helper function to restore video to original state
-        const restoreVideoAttributes = (video) => {
-            if (video.dataset.originalLoop !== undefined) {
-                video.loop = video.dataset.originalLoop === 'true';
-                if (video.loop) {
-                    video.setAttribute('loop', 'true');
-                } else {
-                    video.removeAttribute('loop');
-                }
-                delete video.dataset.originalLoop;
-            }
-            if (video.dataset.originalMuted !== undefined) {
-                video.muted = video.dataset.originalMuted === 'true';
-                delete video.dataset.originalMuted;
-            }
-            if (video.dataset.originalControls !== undefined) {
-                const shouldHaveControls = video.dataset.originalControls === 'true';
-                video.controls = shouldHaveControls;
-                if (!shouldHaveControls) {
-                    video.removeAttribute('controls');
-                } else {
-                    video.setAttribute('controls', 'true');
-                }
-                delete video.dataset.originalControls;
-            }
-            if (video.dataset.originalAutoplay !== undefined) {
-                const shouldAutoplay = video.dataset.originalAutoplay === 'true';
-                video.autoplay = shouldAutoplay;
-                if (shouldAutoplay) {
-                    video.setAttribute('autoplay', 'true');
-                } else {
-                    video.removeAttribute('autoplay');
-                }
-                delete video.dataset.originalAutoplay;
-            }
-        };
-
-        // Helper function to enter fullscreen on mobile
-        const enterFullscreen = (video) => {
+        const openModal = async (videoSrc, userInitiated = true) => {
             try {
-                if (video.requestFullscreen) {
-                    return video.requestFullscreen();
-                } else if (video.webkitRequestFullscreen) {
-                    return video.webkitRequestFullscreen();
-                } else if (video.mozRequestFullScreen) {
-                    return video.mozRequestFullScreen();
-                } else if (video.msRequestFullscreen) {
-                    return video.msRequestFullscreen();
-                } else if (video.webkitEnterFullscreen) {
-                    // iOS Safari fallback
-                    return video.webkitEnterFullscreen();
-                }
-            } catch (error) {
-                console.warn('Fullscreen request failed:', error);
-            }
-            return Promise.resolve();
-        };
-
-        const openModal = async (videoSrc) => {
-            try {
-                // Load video with modal-specific settings
-                await loadVideo(modalVideo, videoSrc, true);
+                console.log('Opening modal with video:', videoSrc, userInitiated ? '(user initiated)' : '(programmatic)');
                 
+                // First, pause all background videos
+                pauseAllBackgroundVideos();
+                
+                // Set modal state
+                isModalOpen = true;
+                modalVideo.dataset.isModalVideo = 'true';
+                modalVideo.dataset.userInitiated = userInitiated ? 'true' : 'false';
+                
+                // Show modal
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
                 
-                // Focus the close button for accessibility
-                setTimeout(() => closeButton.focus(), 100);
+                // Load and prepare video
+                await loadVideo(modalVideo, videoSrc);
                 
-                // Add a flag to prevent other systems from pausing this video
-                modalVideo.dataset.isModalVideo = 'true';
+                // Setup modal video for playback (autoplay more likely to work with user interaction)
+                await playModalVideo(modalVideo);
                 
-                // Play the video (will respect controls and not auto-start)
-                await playVideo(modalVideo, true);
+                // Focus close button for accessibility
+                setTimeout(() => {
+                    if (closeButton) closeButton.focus();
+                }, 200);
+                
+                console.log('Modal opened successfully');
+                
             } catch (error) {
                 console.error('Failed to open video modal:', error);
-                // Fallback: still show modal even if video fails
+                // Still show modal even if video fails
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
-                
-                // Still set the flag even on error
                 modalVideo.dataset.isModalVideo = 'true';
+                modalVideo.dataset.userInitiated = 'true';
+                isModalOpen = true;
             }
         };
 
         const closeModal = () => {
             try {
+                console.log('Closing modal');
+                
+                // Stop and clear modal video
                 modalVideo.pause();
+                modalVideo.currentTime = 0;
                 modalVideo.src = '';
-                modalVideo.load(); // Clear the video
-                // Remove the modal flag
+                modalVideo.load();
+                
+                // Remove any play overlay
+                const overlay = modal.querySelector('.play-overlay');
+                if (overlay) overlay.remove();
+                
+                // Clear modal state
                 delete modalVideo.dataset.isModalVideo;
+                delete modalVideo.dataset.userInitiated;
+                isModalOpen = false;
+                
+                // Hide modal
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                
+                // Resume background videos after a short delay
+                setTimeout(() => {
+                    resumeBackgroundVideos();
+                }, 300);
+                
+                console.log('Modal closed successfully');
+                
             } catch (error) {
                 console.warn('Error closing video:', error);
             }
-            
-            modal.classList.remove('is-open');
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
         };
 
         // Initialize all videos on page load for better performance
         const initializeVideos = () => {
-            const videos = document.querySelectorAll('video');
+            const videos = document.querySelectorAll('video:not(#modal-video)');
             videos.forEach(video => {
                 // Set optimal attributes for cross-browser compatibility
                 video.setAttribute('preload', 'metadata');
@@ -840,8 +950,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Add error handling
                 video.addEventListener('error', (e) => {
-                    console.warn('Video error:', video.currentSrc || 'unknown source', e);
-                    // Hide video container if it fails to load
+                    console.warn('Video error:', video.currentSrc || video.src || 'unknown source', e);
                     const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
                     if (wrapper) {
                         wrapper.style.opacity = '0.5';
@@ -849,44 +958,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Improve loading performance
+                // Loading states
                 video.addEventListener('loadstart', () => {
                     const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.add('loading');
-                    }
+                    if (wrapper) wrapper.classList.add('loading');
                 });
 
                 video.addEventListener('loadeddata', () => {
                     const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.remove('loading');
-                    }
-                });
-
-                // Handle video source loading for better compatibility
-                video.addEventListener('loadedmetadata', () => {
-                    // Video metadata loaded successfully
-                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.remove('loading');
-                    }
+                    if (wrapper) wrapper.classList.remove('loading');
                 });
             });
         };
 
-        // Close button event
+        // Event listeners
         closeButton.addEventListener('click', closeModal);
 
-        // Close on backdrop click (but not on video click)
+        // Close on backdrop click
         modal.addEventListener('click', (e) => {
-            // Only close if clicking on the modal backdrop, not on the video or modal content
             if (e.target === modal) {
                 closeModal();
             }
         });
 
-        // Prevent modal from closing when clicking on video or modal content
+        // Prevent modal from closing when clicking on content
         const modalContent = modal.querySelector('.video-modal-content');
         if (modalContent) {
             modalContent.addEventListener('click', (e) => {
@@ -896,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Close on escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            if (e.key === 'Escape' && isModalOpen) {
                 closeModal();
             }
         });
@@ -904,10 +999,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enhanced video click handling
         document.addEventListener('click', async (e) => {
             const video = e.target.closest('video');
-            if (video && (video.src || video.currentSrc || video.querySelector('source'))) {
+            if (video && video.id !== 'modal-video' && !isModalOpen) {
                 e.preventDefault();
                 
-                // Get video source (prioritize currentSrc, then src, then first source element)
+                // Get video source
                 const videoSrc = video.currentSrc || video.src || 
                     (video.querySelector('source') && video.querySelector('source').src);
                 
@@ -916,39 +1011,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                // Check if it's a mobile device
+                console.log('Video clicked:', videoSrc);
+                
+                // Always open modal on desktop, handle mobile differently
                 if (isMobileDevice()) {
+                    // On mobile, try native fullscreen first, fallback to modal
                     try {
-                        // On mobile: prepare video for fullscreen with native controls
-                        prepareVideoForFullscreen(video);
+                        video.muted = false;
+                        video.controls = true;
+                        await video.play();
                         
-                        await playVideo(video);
-                        
-                        // Enter fullscreen after video starts playing
-                        setTimeout(async () => {
-                            try {
-                                await enterFullscreen(video);
-                            } catch (error) {
-                                console.warn('Fullscreen failed, continuing with inline playback');
-                                // Restore original attributes if fullscreen fails
-                                restoreVideoAttributes(video);
-                            }
-                        }, 200);
+                        // Try to enter fullscreen
+                        if (video.requestFullscreen) {
+                            await video.requestFullscreen();
+                        } else if (video.webkitEnterFullscreen) {
+                            await video.webkitEnterFullscreen();
+                        } else {
+                            // Fallback to modal
+                            openModal(videoSrc, true);
+                        }
                     } catch (error) {
-                        console.warn('Mobile video playback failed:', error);
-                        // Restore original attributes on error
-                        restoreVideoAttributes(video);
-                        // Fallback to modal even on mobile if direct playback fails
-                        openModal(videoSrc);
+                        console.warn('Mobile video failed, using modal:', error);
+                        openModal(videoSrc, true);
                     }
                 } else {
-                    // On desktop: open modal
-                    openModal(videoSrc);
+                    // Desktop: open modal with autoplay (user interaction detected)
+                    openModal(videoSrc, true);
                 }
             }
         });
 
-        // Handle fullscreen exit events
+        // Handle fullscreen exit events (for mobile)
         const handleFullscreenExit = () => {
             const isInFullscreen = !!(
                 document.fullscreenElement ||
@@ -958,47 +1051,43 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (!isInFullscreen) {
-                // Fullscreen exited, find and handle any playing videos (except modal video)
-                const videos = document.querySelectorAll('video');
+                // Only handle non-modal videos that were in fullscreen
+                const videos = document.querySelectorAll('video:not(#modal-video)');
                 videos.forEach(video => {
-                    // Only pause if it's NOT the modal video and was modified for fullscreen
-                    if (!video.paused && video.id !== 'modal-video' && !video.dataset.isModalVideo && video.dataset.originalLoop !== undefined) {
+                    if (video.controls && !video.muted) {
+                        // Reset mobile video back to autoplay state
                         video.pause();
-                        
-                        // Restore original video attributes if they were modified for fullscreen
-                        restoreVideoAttributes(video);
+                        video.controls = false;
+                        video.muted = true;
+                        video.currentTime = 0;
                     }
                 });
             }
         };
 
-        // Add fullscreen change listeners
+        // Fullscreen change listeners
         document.addEventListener('fullscreenchange', handleFullscreenExit);
         document.addEventListener('webkitfullscreenchange', handleFullscreenExit);
         document.addEventListener('mozfullscreenchange', handleFullscreenExit);
         document.addEventListener('MSFullscreenChange', handleFullscreenExit);
 
-        // Initialize videos when DOM is ready
-        initializeVideos();
-
-        // Handle visibility changes to pause videos when page is hidden (but exclude modal video)
+        // Handle page visibility changes
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                // Add a small delay to avoid conflicts with modal opening
-                setTimeout(() => {
-                    // Double-check that the page is still hidden and modal isn't open
-                    if (document.hidden && !modal.classList.contains('is-open')) {
-                        const videos = document.querySelectorAll('video');
-                        videos.forEach(video => {
-                            // Don't pause the modal video - let user control it
-                            if (!video.paused && video.id !== 'modal-video' && !video.dataset.isModalVideo) {
-                                video.pause();
-                            }
-                        });
+            if (document.hidden && !isModalOpen) {
+                // Only pause background videos when page is hidden and modal is not open
+                const videos = document.querySelectorAll('video:not(#modal-video)');
+                videos.forEach(video => {
+                    if (!video.paused) {
+                        video.pause();
                     }
-                }, 100);
+                });
             }
         });
+
+        // Initialize videos
+        initializeVideos();
+        
+        console.log('Video system initialized');
     };
     
     // Initialize all modules
