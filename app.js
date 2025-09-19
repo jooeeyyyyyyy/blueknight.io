@@ -627,83 +627,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initVideoSystem = () => {
         const modal = document.getElementById('video-modal');
-        const modalVideo = document.getElementById('modal-video');
+        const playerContainer = document.getElementById('youtube-player-container');
         const closeButton = modal.querySelector('.video-modal-close');
         
-        if (!modal || !modalVideo || !closeButton) return;
+        if (!modal || !playerContainer || !closeButton) return;
 
-        // Global state for modal
+        // Global state for modal and YouTube player
         let isModalOpen = false;
         let backgroundVideos = [];
-
-        // Show play button overlay when autoplay fails
-        const showPlayButtonOverlay = (video) => {
-            const videoContainer = video.closest('.video-modal-content');
-            if (!videoContainer || videoContainer.querySelector('.play-overlay')) return;
-
-            const overlay = document.createElement('div');
-            overlay.className = 'play-overlay';
-            overlay.innerHTML = `
-                <button class="play-overlay-button" aria-label="Play video">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5,3 19,12 5,21"></polygon>
-                    </svg>
-                </button>
-            `;
-            
-            overlay.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.3);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10;
-                backdrop-filter: blur(2px);
-                border-radius: var(--border-radius-xl);
-            `;
-            
-            const button = overlay.querySelector('.play-overlay-button');
-            button.style.cssText = `
-                background: rgba(255, 255, 255, 0.9);
-                border: none;
-                border-radius: 50%;
-                width: 80px;
-                height: 80px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-                color: #000;
-            `;
-            
-            button.addEventListener('click', async () => {
-                try {
-                    video.muted = false;
-                    await video.play();
-                    overlay.remove();
-                    console.log('Video started via overlay button');
-                } catch (error) {
-                    console.warn('Manual play failed:', error);
-                }
-            });
-            
-            button.addEventListener('mouseenter', () => {
-                button.style.transform = 'scale(1.1)';
-                button.style.background = 'rgba(255, 255, 255, 1)';
-            });
-            
-            button.addEventListener('mouseleave', () => {
-                button.style.transform = 'scale(1)';
-                button.style.background = 'rgba(255, 255, 255, 0.9)';
-            });
-            
-            videoContainer.appendChild(overlay);
-        };
+        let youtubePlayer = null;
+        let isYouTubeAPIReady = false;
 
         // Helper function to detect mobile devices
         const isMobileDevice = () => {
@@ -711,10 +644,19 @@ document.addEventListener('DOMContentLoaded', () => {
                    (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
         };
 
+        // Extract YouTube video ID from various URL formats
+        const extractYouTubeId = (url) => {
+            if (!url) return null;
+            
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : url; // Return ID or assume it's already an ID
+        };
+
         // Pause all background videos when modal opens
         const pauseAllBackgroundVideos = () => {
             backgroundVideos = [];
-            const videos = document.querySelectorAll('video:not(#modal-video)');
+            const videos = document.querySelectorAll('video');
             videos.forEach(video => {
                 if (!video.paused) {
                     backgroundVideos.push({
@@ -738,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resumeBackgroundVideos = () => {
             backgroundVideos.forEach(videoData => {
                 const video = videoData.element;
-                if (videoData.wasPlaying && video && !video.paused === false) {
+                if (videoData.wasPlaying && video) {
                     try {
                         video.currentTime = videoData.currentTime;
                         const playPromise = video.play();
@@ -756,170 +698,157 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Attempted to resume background videos');
         };
 
-        // Enhanced video loading with better error handling
-        const loadVideo = (video, src) => {
+        // Initialize YouTube API when ready
+        window.onYouTubeIframeAPIReady = () => {
+            isYouTubeAPIReady = true;
+            console.log('YouTube API ready');
+        };
+
+        // Create YouTube player
+        const createYouTubePlayer = (videoId) => {
             return new Promise((resolve, reject) => {
-                const handleLoad = () => {
-                    video.removeEventListener('loadeddata', handleLoad);
-                    video.removeEventListener('error', handleError);
-                    video.removeEventListener('canplaythrough', handleCanPlay);
-                    resolve(video);
-                };
+                if (!isYouTubeAPIReady || !window.YT) {
+                    reject(new Error('YouTube API not ready'));
+                    return;
+                }
 
-                const handleCanPlay = () => {
-                    video.removeEventListener('loadeddata', handleLoad);
-                    video.removeEventListener('error', handleError);
-                    video.removeEventListener('canplaythrough', handleCanPlay);
-                    resolve(video);
-                };
+                // Clear any existing player
+                if (youtubePlayer) {
+                    try {
+                        youtubePlayer.destroy();
+                    } catch (e) {
+                        console.warn('Error destroying previous player:', e);
+                    }
+                }
 
-                const handleError = (e) => {
-                    video.removeEventListener('loadeddata', handleLoad);
-                    video.removeEventListener('error', handleError);
-                    video.removeEventListener('canplaythrough', handleCanPlay);
-                    console.warn('Video loading failed:', src, e);
-                    reject(e);
-                };
+                // Clear container
+                playerContainer.innerHTML = '';
 
-                video.addEventListener('loadeddata', handleLoad);
-                video.addEventListener('canplaythrough', handleCanPlay);
-                video.addEventListener('error', handleError);
-
-                // Configure modal video for optimal playback with autoplay support
-                video.setAttribute('controls', 'true');
-                video.setAttribute('preload', 'auto');
-                video.setAttribute('playsinline', 'true');
-                video.removeAttribute('autoplay'); // We'll handle autoplay programmatically
-                video.removeAttribute('loop');
-                
-                // Start muted for better autoplay compatibility, we'll unmute after play starts
-                video.muted = true;
-                video.loop = false;
-                video.autoplay = false;
-                
-                video.src = src;
-                video.load();
+                try {
+                    youtubePlayer = new YT.Player(playerContainer, {
+                        height: '100%',
+                        width: '100%',
+                        videoId: videoId,
+                        playerVars: {
+                            autoplay: 1,        // Enable autoplay
+                            mute: 0,            // Start unmuted (YouTube handles autoplay policies)
+                            controls: 1,        // Show controls
+                            showinfo: 0,        // Hide video info
+                            rel: 0,             // Don't show related videos
+                            iv_load_policy: 3,  // Hide annotations
+                            modestbranding: 1,  // Modest YouTube branding
+                            playsinline: 1,     // Play inline on mobile
+                            fs: 1,              // Allow fullscreen
+                            cc_load_policy: 0,  // Don't show captions by default
+                            disablekb: 0,       // Enable keyboard controls
+                            enablejsapi: 1      // Enable JS API
+                        },
+                        events: {
+                            onReady: (event) => {
+                                console.log('YouTube player ready');
+                                // Auto-play the video
+                                try {
+                                    event.target.playVideo();
+                                } catch (e) {
+                                    console.warn('Autoplay failed:', e);
+                                }
+                                resolve(event.target);
+                            },
+                            onStateChange: (event) => {
+                                console.log('YouTube player state:', event.data);
+                            },
+                            onError: (event) => {
+                                console.error('YouTube player error:', event.data);
+                                reject(new Error(`YouTube player error: ${event.data}`));
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error creating YouTube player:', error);
+                    reject(error);
+                }
             });
         };
 
-        // Robust modal video play function with autoplay
-        const playModalVideo = async (video) => {
+        // Open modal with YouTube video
+        const openModal = async (videoId, userInitiated = true) => {
             try {
-                // Wait for video to be ready
-                if (video.readyState < 3) {
-                    await new Promise((resolve) => {
-                        const checkReady = () => {
-                            if (video.readyState >= 3) {
-                                resolve();
-                            } else {
-                                setTimeout(checkReady, 100);
-                            }
-                        };
-                        checkReady();
-                    });
-                }
-
-                // Reset to beginning
-                video.currentTime = 0;
-
-                // Auto-play the modal video (start muted, then try to unmute)
-                console.log('Starting modal video autoplay');
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    return playPromise.then(() => {
-                        console.log('Modal video started playing');
-                        // Try to unmute after successful play start
-                        setTimeout(() => {
-                            try {
-                                video.muted = false;
-                                console.log('Modal video unmuted successfully');
-                            } catch (error) {
-                                console.warn('Could not unmute video:', error);
-                            }
-                        }, 500); // Small delay to ensure playback is stable
-                        return Promise.resolve();
-                    }).catch(error => {
-                        console.warn('Modal video autoplay failed:', error);
-                        // If muted autoplay fails, try without sound
-                        video.muted = true;
-                        return video.play().then(() => {
-                            console.log('Modal video playing muted (user can unmute via controls)');
-                            return Promise.resolve();
-                        }).catch(err => {
-                            console.warn('All autoplay attempts failed:', err);
-                            console.log('User can manually start playback via controls');
-                            // Show a subtle play button overlay if autoplay completely fails
-                            showPlayButtonOverlay(video);
-                            return Promise.resolve();
-                        });
-                    });
-                }
-                return Promise.resolve();
-            } catch (error) {
-                console.warn('Modal video setup error:', error);
-                return Promise.resolve();
-            }
-        };
-
-        const openModal = async (videoSrc, userInitiated = true) => {
-            try {
-                console.log('Opening modal with video:', videoSrc, userInitiated ? '(user initiated)' : '(programmatic)');
+                console.log('Opening modal with YouTube video:', videoId);
                 
                 // First, pause all background videos
                 pauseAllBackgroundVideos();
                 
                 // Set modal state
                 isModalOpen = true;
-                modalVideo.dataset.isModalVideo = 'true';
-                modalVideo.dataset.userInitiated = userInitiated ? 'true' : 'false';
                 
                 // Show modal
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
                 
-                // Load and prepare video
-                await loadVideo(modalVideo, videoSrc);
+                // Wait for YouTube API if not ready
+                if (!isYouTubeAPIReady) {
+                    console.log('Waiting for YouTube API...');
+                    let attempts = 0;
+                    while (!isYouTubeAPIReady && attempts < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        attempts++;
+                    }
+                    
+                    if (!isYouTubeAPIReady) {
+                        throw new Error('YouTube API failed to load');
+                    }
+                }
                 
-                // Setup modal video for playback (autoplay more likely to work with user interaction)
-                await playModalVideo(modalVideo);
+                // Create YouTube player
+                await createYouTubePlayer(videoId);
                 
                 // Focus close button for accessibility
                 setTimeout(() => {
                     if (closeButton) closeButton.focus();
-                }, 200);
+                }, 500);
                 
-                console.log('Modal opened successfully');
+                console.log('Modal opened successfully with YouTube player');
                 
             } catch (error) {
-                console.error('Failed to open video modal:', error);
-                // Still show modal even if video fails
+                console.error('Failed to open YouTube modal:', error);
+                // Fallback: show modal with error message
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
-                modalVideo.dataset.isModalVideo = 'true';
-                modalVideo.dataset.userInitiated = 'true';
+                playerContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 400px; background: #000; color: white; text-align: center; border-radius: 12px;">
+                        <div>
+                            <h3>Video Unavailable</h3>
+                            <p>Unable to load YouTube video. Please try again later.</p>
+                            <a href="https://youtube.com/watch?v=${videoId}" target="_blank" style="color: #3b82f6;">Watch on YouTube</a>
+                        </div>
+                    </div>
+                `;
                 isModalOpen = true;
             }
         };
 
+        // Close modal and cleanup YouTube player
         const closeModal = () => {
             try {
                 console.log('Closing modal');
                 
-                // Stop and clear modal video
-                modalVideo.pause();
-                modalVideo.currentTime = 0;
-                modalVideo.src = '';
-                modalVideo.load();
+                // Stop YouTube player
+                if (youtubePlayer) {
+                    try {
+                        youtubePlayer.pauseVideo();
+                        youtubePlayer.destroy();
+                        youtubePlayer = null;
+                    } catch (e) {
+                        console.warn('Error stopping YouTube player:', e);
+                    }
+                }
                 
-                // Remove any play overlay
-                const overlay = modal.querySelector('.play-overlay');
-                if (overlay) overlay.remove();
+                // Clear container
+                playerContainer.innerHTML = '';
                 
                 // Clear modal state
-                delete modalVideo.dataset.isModalVideo;
-                delete modalVideo.dataset.userInitiated;
                 isModalOpen = false;
                 
                 // Hide modal
@@ -935,13 +864,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Modal closed successfully');
                 
             } catch (error) {
-                console.warn('Error closing video:', error);
+                console.warn('Error closing video modal:', error);
             }
         };
 
-        // Initialize all videos on page load for better performance
+        // Initialize all videos on page load
         const initializeVideos = () => {
-            const videos = document.querySelectorAll('video:not(#modal-video)');
+            const videos = document.querySelectorAll('video');
             videos.forEach(video => {
                 // Set optimal attributes for cross-browser compatibility
                 video.setAttribute('preload', 'metadata');
@@ -996,86 +925,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Enhanced video click handling
+        // Enhanced video click handling - now opens YouTube videos
         document.addEventListener('click', async (e) => {
             const video = e.target.closest('video');
-            if (video && video.id !== 'modal-video' && !isModalOpen) {
+            if (video && !isModalOpen) {
                 e.preventDefault();
                 
-                // Get video source
-                const videoSrc = video.currentSrc || video.src || 
-                    (video.querySelector('source') && video.querySelector('source').src);
+                // Get YouTube ID from data attribute
+                const youtubeId = video.dataset.youtubeId;
                 
-                if (!videoSrc) {
-                    console.warn('No video source found');
+                if (!youtubeId) {
+                    console.warn('No YouTube ID found for video');
                     return;
                 }
                 
-                console.log('Video clicked:', videoSrc);
+                console.log('Video clicked, opening YouTube:', youtubeId);
                 
-                // Always open modal on desktop, handle mobile differently
-                if (isMobileDevice()) {
-                    // On mobile, try native fullscreen first, fallback to modal
-                    try {
-                        video.muted = false;
-                        video.controls = true;
-                        await video.play();
-                        
-                        // Try to enter fullscreen
-                        if (video.requestFullscreen) {
-                            await video.requestFullscreen();
-                        } else if (video.webkitEnterFullscreen) {
-                            await video.webkitEnterFullscreen();
-                        } else {
-                            // Fallback to modal
-                            openModal(videoSrc, true);
-                        }
-                    } catch (error) {
-                        console.warn('Mobile video failed, using modal:', error);
-                        openModal(videoSrc, true);
-                    }
-                } else {
-                    // Desktop: open modal with autoplay (user interaction detected)
-                    openModal(videoSrc, true);
-                }
+                // For both mobile and desktop, open YouTube in modal
+                // YouTube player handles mobile optimization automatically
+                openModal(youtubeId, true);
             }
         });
-
-        // Handle fullscreen exit events (for mobile)
-        const handleFullscreenExit = () => {
-            const isInFullscreen = !!(
-                document.fullscreenElement ||
-                document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement
-            );
-
-            if (!isInFullscreen) {
-                // Only handle non-modal videos that were in fullscreen
-                const videos = document.querySelectorAll('video:not(#modal-video)');
-                videos.forEach(video => {
-                    if (video.controls && !video.muted) {
-                        // Reset mobile video back to autoplay state
-                        video.pause();
-                        video.controls = false;
-                        video.muted = true;
-                        video.currentTime = 0;
-                    }
-                });
-            }
-        };
-
-        // Fullscreen change listeners
-        document.addEventListener('fullscreenchange', handleFullscreenExit);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenExit);
-        document.addEventListener('mozfullscreenchange', handleFullscreenExit);
-        document.addEventListener('MSFullscreenChange', handleFullscreenExit);
 
         // Handle page visibility changes
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && !isModalOpen) {
                 // Only pause background videos when page is hidden and modal is not open
-                const videos = document.querySelectorAll('video:not(#modal-video)');
+                const videos = document.querySelectorAll('video');
                 videos.forEach(video => {
                     if (!video.paused) {
                         video.pause();
@@ -1087,7 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize videos
         initializeVideos();
         
-        console.log('Video system initialized');
+        console.log('YouTube video system initialized');
     };
     
     // Initialize all modules
