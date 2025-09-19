@@ -1,5 +1,5 @@
 /* * BlueKnight M&A Platform Redesign  
- * app.js
+ * app.js 
  * * ES Module for all site interactions
  */
 
@@ -156,18 +156,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newPanel = component.querySelector(`#${newPanelId}`);
 
                 if (oldPanel && newPanel) {
-                    // Pause video in old panel
+                    // Pause video in old panel (but only if it's not the modal video)
                     const oldVideo = oldPanel.querySelector('video');
-                    if (oldVideo) {
+                    if (oldVideo && oldVideo.id !== 'modal-video' && !oldVideo.dataset.isModalVideo) {
                         oldVideo.pause();
                     }
                     
                     oldPanel.hidden = true;
                     newPanel.hidden = false;
                     
-                    // Play video in new panel
+                    // Play video in new panel (but only if it's not the modal video)
                     const newVideo = newPanel.querySelector('video');
-                    if (newVideo) {
+                    if (newVideo && newVideo.id !== 'modal-video' && !newVideo.dataset.isModalVideo) {
                         newVideo.currentTime = 0; // Reset to beginning
                         // Enhanced play with better error handling
                         const playPromise = newVideo.play();
@@ -320,9 +320,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPanel = panels[newIndex];
 
             if (oldPanel && newPanel) {
-                // Pause video in old panel
+                // Pause video in old panel (but only if it's not the modal video)
                 const oldVideo = oldPanel.querySelector('video');
-                if (oldVideo) {
+                if (oldVideo && oldVideo.id !== 'modal-video' && !oldVideo.dataset.isModalVideo) {
                     oldVideo.pause();
                 }
                 
@@ -330,9 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 newPanel.hidden = false;
                 newPanel.focus();
                 
-                // Play video in new panel
+                // Play video in new panel (but only if it's not the modal video)
                 const newVideo = newPanel.querySelector('video');
-                if (newVideo) {
+                if (newVideo && newVideo.id !== 'modal-video' && !newVideo.dataset.isModalVideo) {
                     newVideo.currentTime = 0; // Reset to beginning
                     // Enhanced play with better error handling
                     const playPromise = newVideo.play();
@@ -796,6 +796,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Focus the close button for accessibility
                 setTimeout(() => closeButton.focus(), 100);
                 
+                // Add a flag to prevent other systems from pausing this video
+                modalVideo.dataset.isModalVideo = 'true';
+                
                 // Play the video (will respect controls and not auto-start)
                 await playVideo(modalVideo, true);
             } catch (error) {
@@ -804,6 +807,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
+                
+                // Still set the flag even on error
+                modalVideo.dataset.isModalVideo = 'true';
             }
         };
 
@@ -812,6 +818,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalVideo.pause();
                 modalVideo.src = '';
                 modalVideo.load(); // Clear the video
+                // Remove the modal flag
+                delete modalVideo.dataset.isModalVideo;
             } catch (error) {
                 console.warn('Error closing video:', error);
             }
@@ -953,7 +961,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fullscreen exited, find and handle any playing videos (except modal video)
                 const videos = document.querySelectorAll('video');
                 videos.forEach(video => {
-                    if (!video.paused && video.id !== 'modal-video') {
+                    // Only pause if it's NOT the modal video and was modified for fullscreen
+                    if (!video.paused && video.id !== 'modal-video' && !video.dataset.isModalVideo && video.dataset.originalLoop !== undefined) {
                         video.pause();
                         
                         // Restore original video attributes if they were modified for fullscreen
@@ -972,15 +981,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize videos when DOM is ready
         initializeVideos();
 
-        // Handle visibility changes to pause videos when page is hidden
+        // Handle visibility changes to pause videos when page is hidden (but exclude modal video)
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                const videos = document.querySelectorAll('video');
-                videos.forEach(video => {
-                    if (!video.paused) {
-                        video.pause();
+                // Add a small delay to avoid conflicts with modal opening
+                setTimeout(() => {
+                    // Double-check that the page is still hidden and modal isn't open
+                    if (document.hidden && !modal.classList.contains('is-open')) {
+                        const videos = document.querySelectorAll('video');
+                        videos.forEach(video => {
+                            // Don't pause the modal video - let user control it
+                            if (!video.paused && video.id !== 'modal-video' && !video.dataset.isModalVideo) {
+                                video.pause();
+                            }
+                        });
                     }
-                });
+                }, 100);
             }
         });
     };
