@@ -625,6 +625,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const initAiShowcaseAnimations = () => {
+        const aiShowcaseSection = document.getElementById('ai-showcase');
+        if (!aiShowcaseSection) return;
+
+        const aiMessages = aiShowcaseSection.querySelectorAll('.ai-message');
+        if (aiMessages.length === 0) return;
+
+        // Create intersection observer for the AI showcase section
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Section is visible, show messages with staggered delay
+                    aiMessages.forEach((message, index) => {
+                        setTimeout(() => {
+                            message.classList.add('is-visible');
+                        }, index * 700); // 700ms delay between each message
+                    });
+                } else {
+                    // Section is not visible, hide messages
+                    aiMessages.forEach(message => {
+                        message.classList.remove('is-visible');
+                    });
+                }
+            });
+        }, {
+            threshold: 0.3, // Trigger when 30% of the section is visible
+            rootMargin: '0px 0px -10% 0px' // Add some margin to trigger slightly before fully visible
+        });
+
+        observer.observe(aiShowcaseSection);
+        
+        console.log('AI showcase viewport animations initialized');
+    };
+
     const initVideoSystem = () => {
         const modal = document.getElementById('video-modal');
         const playerContainer = document.getElementById('youtube-player-container');
@@ -928,6 +962,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enhanced video click handling - now opens YouTube videos
         document.addEventListener('click', async (e) => {
             const video = e.target.closest('video');
+            const heroButton = e.target.closest('#hero-demo-button');
+            
+            // Handle hero demo button click
+            if (heroButton && !isModalOpen) {
+                e.preventDefault();
+                
+                const youtubeId = heroButton.dataset.youtubeId;
+                
+                if (!youtubeId) {
+                    console.warn('No YouTube ID found for hero button');
+                    return;
+                }
+                
+                console.log('Hero demo button clicked, opening YouTube:', youtubeId);
+                openModal(youtubeId, true);
+                return;
+            }
+            
+            // Handle video click
             if (video && !isModalOpen) {
                 e.preventDefault();
                 
@@ -976,5 +1029,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
+    initAiShowcaseAnimations();
     initVideoSystem();
 });
