@@ -2,7 +2,7 @@
  * app.js 
  * * ES Module for all site interactions
  */
-
+ 
 document.addEventListener('DOMContentLoaded', () => {
 
     const initHeader = () => {
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         const storedTheme = localStorage.getItem('theme');
-        const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const currentTheme = storedTheme || preferredTheme;
+        // Default to dark mode if no preference is stored
+        const currentTheme = storedTheme || 'dark';
 
         applyTheme(currentTheme);
 
@@ -625,6 +625,150 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const initContactModal = () => {
+        const modal = document.getElementById('contact-modal');
+        const modalForm = document.getElementById('contact-form-modal');
+        const statusEl = document.getElementById('form-status-modal');
+        const closeButton = modal.querySelector('.contact-modal-close');
+        
+        if (!modal || !modalForm) return;
+
+        // Form validation function
+        const validateField = (field) => {
+            const parent = field.closest('.form-group');
+            const errorEl = parent.querySelector('.error-message');
+            let isValid = true;
+            let errorMessage = '';
+
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                isValid = false;
+                errorMessage = 'This field is required.';
+            } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                isValid = false;
+                errorMessage = 'Please enter a valid email address.';
+            }
+
+            parent.classList.toggle('has-error', !isValid);
+            if (errorEl) errorEl.textContent = errorMessage;
+            return isValid;
+        };
+
+        // Open modal function
+        const openModal = () => {
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus first input after animation
+            setTimeout(() => {
+                const firstInput = modalForm.querySelector('input');
+                if (firstInput) firstInput.focus();
+            }, 300);
+        };
+
+        // Close modal function
+        const closeModal = () => {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            modalForm.reset();
+            
+            // Clear any error states
+            modalForm.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('has-error');
+                const errorEl = group.querySelector('.error-message');
+                if (errorEl) errorEl.textContent = '';
+            });
+            
+            if (statusEl) {
+                statusEl.textContent = '';
+                statusEl.className = '';
+            }
+        };
+
+        // Event listeners for opening modal
+        document.addEventListener('click', (e) => {
+            // Check if clicked element is a contact button or link
+            const contactTrigger = e.target.closest('a[href="#contact"], .contact-trigger');
+            
+            if (contactTrigger) {
+                e.preventDefault();
+                openModal();
+            }
+        });
+
+        // Close button
+        closeButton.addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Prevent modal from closing when clicking on content
+        const modalContent = modal.querySelector('.contact-modal-content');
+        if (modalContent) {
+            modalContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
+        });
+
+        // Form validation on input
+        modalForm.addEventListener('input', e => {
+            if (e.target.hasAttribute('required')) {
+                validateField(e.target);
+            }
+        });
+
+        // Form submission
+        modalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = modalForm.querySelectorAll('input[required], textarea[required]');
+            const isFormValid = Array.from(fields).every(field => validateField(field));
+
+            if (!isFormValid) {
+                statusEl.textContent = 'Please correct the errors above.';
+                statusEl.className = 'error';
+                return;
+            }
+
+            const submitButton = modalForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            statusEl.textContent = '';
+            statusEl.className = '';
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                statusEl.textContent = "Thank you! We'll be in touch shortly.";
+                statusEl.className = 'success';
+                modalForm.reset();
+                
+                // Close modal after success
+                setTimeout(() => {
+                    closeModal();
+                }, 2000);
+            } catch (error) {
+                console.error('Form submission error:', error);
+                statusEl.textContent = 'An error occurred. Please try again later.';
+                statusEl.className = 'error';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Schedule a Demo';
+            }
+        });
+    };
+
     const initAiShowcaseAnimations = () => {
         const aiShowcaseSection = document.getElementById('ai-showcase');
         if (!aiShowcaseSection) return;
@@ -1019,6 +1163,208 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('YouTube video system initialized');
     };
     
+    const initAiChat = () => {
+        const chatContainers = document.querySelectorAll('.ai-chat-container');
+        const aiSection = document.querySelector('.ai-copilot-section');
+        
+        if (chatContainers.length === 0) return;
+
+        let sectionInView = false;
+        const chatStartFunctions = {};
+
+        // Chat conversations for different contexts
+        const conversations = {
+            'copilot-1': [
+                { type: 'user', text: 'Help me identify strategic buyers for a B2B SaaS company with $15M ARR in the logistics space.' },
+                { type: 'ai', text: 'I can help with that. Let me break this down into a few steps:\n\n1. First, I\'ll analyze comparable transactions to understand valuation trends\n2. Then identify strategic buyers with complementary offerings\n3. Finally, surface financial sponsors with relevant portfolio companies\n\nShall we start with precedent deal analysis?' },
+                { type: 'user', text: 'Yes, show me relevant comps.' },
+                { type: 'ai', text: 'I found 23 highly relevant transactions. The top matches include:\n\n• Project44 acquisition by Emergence ($700M, 2021)\n• FourKites Series E ($50M ARR, 8.5x multiple)\n• Convoy acquisition by Flexport ($250M)\n\nAverage EV/Revenue multiple: 7.2x\nMedian enterprise value: $420M\n\nWould you like me to dive deeper into any of these?' }
+            ],
+            'playground-1': [
+                { type: 'user', text: 'What\'s Vista Equity Partners\' acquisition strategy in vertical SaaS?' },
+                { type: 'ai', text: 'Based on analysis of Vista\'s 47 vertical SaaS transactions:\n\n**Key Focus Areas:**\n• Financial services software (32% of deals)\n• Healthcare IT platforms (21%)\n• Supply chain/logistics tech (18%)\n\n**Typical Deal Profile:**\n• ARR: $20M-$100M\n• Growth rate: 25%+ YoY\n• EBITDA margins: 20%+\n\nThey prioritize mission-critical software with recurring revenue and strong retention metrics.' },
+                { type: 'user', text: 'Have they shown interest in logistics tech recently?' },
+                { type: 'ai', text: 'Yes, Vista has been very active in logistics:\n\n**Recent Activity (2023-2024):**\n• Acquired Fortrex (TMS platform, $45M ARR)\n• Invested $200M in Transporeon\n• Portfolio company BluJay Solutions acquired 3 competitors\n\n**Investment Thesis:**\nFocusing on cloud-native platforms that digitize supply chain operations. Average check size: $150-400M.\n\nVista would likely be interested in targets with strong API integrations and enterprise customer bases.' }
+            ]
+        };
+
+        // Typing speed settings
+        const TYPING_SPEED = 20; // ms per character
+        const PAUSE_AFTER_MESSAGE = 1200; // ms
+        const PAUSE_BEFORE_RESTART = 40000; // ms - 40 seconds before restart
+        const FADE_OUT_DURATION = 800; // ms - fade out animation duration
+        const TYPING_INDICATOR_DELAY = 800; // ms
+
+        chatContainers.forEach((container, index) => {
+            const chatId = container.dataset.chatId;
+            const messagesContainer = container.querySelector('.ai-chat-messages');
+            const conversation = conversations[chatId] || [];
+            
+            if (conversation.length === 0) return;
+
+            let currentMessageIndex = 0;
+            let isTyping = false;
+            let currentTypingTimeout = null;
+            let hasStarted = false;
+            
+            // Add 10 second delay for the second chat (playground-1)
+            const startDelay = chatId === 'playground-1' ? 8300 : 0;
+            const isFirstChat = chatId === 'copilot-1';
+
+            const createMessageElement = (type) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `ai-chat-message ${type}`;
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'ai-chat-avatar';
+                avatar.textContent = type === 'user' ? 'U' : 'AI';
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'ai-chat-bubble';
+                
+                const text = document.createElement('p');
+                text.className = 'ai-chat-bubble-text';
+                
+                bubble.appendChild(text);
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(bubble);
+                
+                return { messageDiv, textElement: text };
+            };
+
+            const createTypingIndicator = () => {
+                const { messageDiv, textElement } = createMessageElement('ai');
+                const indicator = document.createElement('div');
+                indicator.className = 'ai-typing-indicator';
+                indicator.innerHTML = '<span></span><span></span><span></span>';
+                textElement.appendChild(indicator);
+                return messageDiv;
+            };
+
+            const typeMessage = async (text, textElement) => {
+                return new Promise((resolve) => {
+                    let charIndex = 0;
+                    const cursor = document.createElement('span');
+                    cursor.className = 'ai-chat-cursor';
+                    textElement.appendChild(cursor);
+
+                    const typeChar = () => {
+                        if (charIndex < text.length) {
+                            const char = text[charIndex];
+                            const textNode = document.createTextNode(char);
+                            textElement.insertBefore(textNode, cursor);
+                            charIndex++;
+                            currentTypingTimeout = setTimeout(typeChar, TYPING_SPEED);
+                        } else {
+                            cursor.remove();
+                            resolve();
+                        }
+                    };
+
+                    typeChar();
+                });
+            };
+
+
+            const displayNextMessage = async () => {
+                if (isTyping) return;
+                
+                if (currentMessageIndex >= conversation.length) {
+                    // Wait before fading out
+                    await new Promise(resolve => setTimeout(resolve, PAUSE_BEFORE_RESTART));
+                    
+                    // Fade out all messages
+                    const allMessages = messagesContainer.querySelectorAll('.ai-chat-message');
+                    allMessages.forEach((msg, index) => {
+                        setTimeout(() => {
+                            msg.style.opacity = '0';
+                            msg.style.transform = 'translateY(-10px)';
+                        }, index * 100);
+                    });
+                    
+                    // Wait for fade out to complete, then clear and restart
+                    await new Promise(resolve => setTimeout(resolve, FADE_OUT_DURATION + (allMessages.length * 100)));
+                    messagesContainer.innerHTML = '';
+                    currentMessageIndex = 0;
+                    displayNextMessage();
+                    return;
+                }
+
+                isTyping = true;
+                const message = conversation[currentMessageIndex];
+                
+                // Show typing indicator for AI messages
+                if (message.type === 'ai') {
+                    const typingIndicator = createTypingIndicator();
+                    messagesContainer.appendChild(typingIndicator);
+                    await new Promise(resolve => setTimeout(resolve, TYPING_INDICATOR_DELAY));
+                    typingIndicator.remove();
+                }
+
+                // Create and display message
+                const { messageDiv, textElement } = createMessageElement(message.type);
+                messagesContainer.appendChild(messageDiv);
+
+                if (message.type === 'user') {
+                    // User messages appear instantly
+                    textElement.textContent = message.text;
+                } else {
+                    // AI messages type out
+                    await typeMessage(message.text, textElement);
+                }
+
+                currentMessageIndex++;
+                isTyping = false;
+
+                // Pause before next message
+                await new Promise(resolve => setTimeout(resolve, PAUSE_AFTER_MESSAGE));
+                displayNextMessage();
+            };
+
+            // Start function
+            const startConversation = () => {
+                if (hasStarted) return;
+                hasStarted = true;
+                setTimeout(() => {
+                    displayNextMessage();
+                }, startDelay);
+            };
+
+            // Store the start function for this chat
+            chatStartFunctions[chatId] = startConversation;
+        });
+
+        // Set up intersection observer - both chats start when section is visible
+        if (aiSection) {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2 // Trigger when 20% of section is visible
+            };
+
+            const observerCallback = (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !sectionInView) {
+                        sectionInView = true;
+                        // Start the first chat immediately
+                        if (chatStartFunctions['copilot-1']) {
+                            chatStartFunctions['copilot-1']();
+                        }
+                        // Start the second chat with its delay (10 seconds after section is visible)
+                        if (chatStartFunctions['playground-1']) {
+                            chatStartFunctions['playground-1']();
+                        }
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(observerCallback, observerOptions);
+            observer.observe(aiSection);
+        }
+
+        console.log('AI chat interfaces initialized');
+    };
+    
     // Initialize all modules
     initHeader();
     initMobileNav();
@@ -1029,6 +1375,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
+    initContactModal();
     initAiShowcaseAnimations();
     initVideoSystem();
+    initAiChat();
 });
