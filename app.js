@@ -1522,11 +1522,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Typing speed settings
-        const TYPING_SPEED = 20; // ms per character
-        const PAUSE_AFTER_MESSAGE = 1200; // ms
-        const PAUSE_BEFORE_RESTART = 40000; // ms - 40 seconds before restart
-        const FADE_OUT_DURATION = 800; // ms - fade out animation duration
-        const TYPING_INDICATOR_DELAY = 800; // ms
+        const TYPING_SPEED = 7; // ms per character
+        const PAUSE_AFTER_MESSAGE = 900; // ms
+        const PAUSE_BEFORE_RESTART = 35000; // ms - 40 seconds before restart
+        const FADE_OUT_DURATION = 1200; // ms - fade out animation duration
+        const TYPING_INDICATOR_DELAY = 600; // ms
 
         chatContainers.forEach((container, index) => {
             const chatId = container.dataset.chatId;
@@ -1541,7 +1541,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let hasStarted = false;
             
             // Add 10 second delay for the second chat (playground-1)
-            const startDelay = chatId === 'playground-1' ? 8300 : 0;
+            const startDelay = chatId === 'playground-1' ? 7300 : 0;
             const isFirstChat = chatId === 'copilot-1';
 
             const createMessageElement = (type) => {
