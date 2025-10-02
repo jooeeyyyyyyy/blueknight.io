@@ -248,6 +248,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     tabs[currentIndex].setAttribute('tabindex', '-1');
                     tabs[closestIndex].setAttribute('aria-selected', 'true');
                     tabs[closestIndex].removeAttribute('tabindex');
+                    
+                    // Scroll the active tab into view in the tabs nav
+                    const activeTab = tabs[closestIndex];
+                    if (activeTab && tabList) {
+                        activeTab.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            inline: 'center', 
+                            block: 'nearest' 
+                        });
+                    }
+                    
                     updatePagination();
                 }
             };
@@ -354,13 +365,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 panelsContainer.addEventListener('mouseleave', endDrag);
                 panelsContainer.addEventListener('touchend', endDrag);
 
-                // Detect scroll end on mobile
+                // Improved scroll detection with throttle for smooth updates
                 let scrollTimeout;
+                let isScrolling = false;
+                let lastScrollTime = 0;
+                const throttleDelay = 50; // Update more frequently
+                
                 panelsContainer.addEventListener('scroll', () => {
                     if (!isMobile()) return;
+                    
+                    const now = Date.now();
+                    
+                    // Throttle: Update immediately if enough time has passed
+                    if (now - lastScrollTime >= throttleDelay) {
+                        detectVisiblePanel();
+                        lastScrollTime = now;
+                    }
+                    
+                    // Debounce: Also update when scrolling stops
                     clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(detectVisiblePanel, 150);
-                });
+                    scrollTimeout = setTimeout(() => {
+                        detectVisiblePanel();
+                        isScrolling = false;
+                    }, 100);
+                    
+                    isScrolling = true;
+                }, { passive: true });
             }
 
             tabList.addEventListener('click', e => {
@@ -588,6 +618,106 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    };
+
+    const initBenefitsSlider = () => {
+        const wrapper = document.querySelector('.benefits-slider-wrapper');
+        if (!wrapper) return;
+
+        const slider = wrapper.querySelector('.benefits-grid');
+        const slides = Array.from(slider.querySelectorAll('.benefit-card'));
+        const prevButton = wrapper.querySelector('.slider-button.prev');
+        const nextButton = wrapper.querySelector('.slider-button.next');
+        const paginationContainer = wrapper.querySelector('.slider-pagination');
+        let paginationDots = [];
+
+        const isMobile = () => window.innerWidth <= 767;
+
+        // Only initialize if mobile
+        if (!isMobile()) return;
+
+        // 1. Pagination
+        if (paginationContainer) {
+            slides.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.classList.add('pagination-dot');
+                dot.setAttribute('aria-label', `Go to benefit ${index + 1}`);
+                dot.addEventListener('click', () => {
+                    const targetSlide = slides[index];
+                    const targetScrollLeft = targetSlide.offsetLeft - slider.offsetLeft;
+                    slider.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                });
+                paginationContainer.appendChild(dot);
+                paginationDots.push(dot);
+            });
+        }
+        
+        const updatePagination = () => {
+            if (!isMobile() || paginationDots.length === 0) return;
+            let closestSlideIndex = 0;
+            let minDistance = Infinity;
+            const scrollLeft = slider.scrollLeft;
+            const containerWidth = slider.clientWidth;
+            
+            if (scrollLeft <= 10) {
+                closestSlideIndex = 0;
+            } else if (scrollLeft >= slider.scrollWidth - containerWidth - 10) {
+                closestSlideIndex = slides.length - 1;
+            } else {
+                const scrollCenter = scrollLeft + containerWidth / 2;
+                slides.forEach((slide, index) => {
+                    const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+                    const distance = Math.abs(slideCenter - scrollCenter);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestSlideIndex = index;
+                    }
+                });
+            }
+            
+            paginationDots.forEach((dot, index) => dot.classList.toggle('is-active', index === closestSlideIndex));
+        };
+        
+        // 2. Button State & Scroll Logic
+        const updateButtons = () => {
+            if (!isMobile()) return;
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+            prevButton.disabled = slider.scrollLeft < 10;
+            nextButton.disabled = slider.scrollLeft > maxScroll - 10;
+        };
+
+        const getScrollAmount = () => {
+            const slide = slider.querySelector('.benefit-card');
+            if (!slide) return 0;
+            const style = window.getComputedStyle(slider);
+            const gap = parseFloat(style.gap) || 24;
+            return slide.offsetWidth + gap;
+        };
+
+        prevButton.addEventListener('click', () => slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }));
+        nextButton.addEventListener('click', () => slider.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }));
+        
+        // 3. Update on scroll
+        let scrollTimeout;
+        slider.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                updatePagination();
+                updateButtons();
+            }, 50);
+        }, { passive: true });
+        
+        // 4. Initial update
+        updatePagination();
+        updateButtons();
+        
+        // 5. Handle resize
+        window.addEventListener('resize', () => {
+            if (isMobile()) {
+                updatePagination();
+                updateButtons();
+            }
+        });
     };
 
     const initWalkthroughSlider = () => {
@@ -1242,10 +1372,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 video.setAttribute('playsinline', 'true');
                 video.muted = true;
                 
+                // Add play button overlay
+                const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
+                if (wrapper && !wrapper.querySelector('.video-play-overlay')) {
+                    const playOverlay = document.createElement('div');
+                    playOverlay.className = 'video-play-overlay';
+                    playOverlay.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    `;
+                    wrapper.appendChild(playOverlay);
+                }
+                
                 // Add error handling
                 video.addEventListener('error', (e) => {
                     console.warn('Video error:', video.currentSrc || video.src || 'unknown source', e);
-                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
                     if (wrapper) {
                         wrapper.style.opacity = '0.5';
                         wrapper.setAttribute('title', 'Video unavailable');
@@ -1254,12 +1396,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Loading states
                 video.addEventListener('loadstart', () => {
-                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
                     if (wrapper) wrapper.classList.add('loading');
                 });
 
                 video.addEventListener('loadeddata', () => {
-                    const wrapper = video.closest('.panel-image-wrapper, .showcase-video-wrapper');
                     if (wrapper) wrapper.classList.remove('loading');
                 });
             });
@@ -1293,6 +1433,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enhanced video click handling - now opens YouTube videos
         document.addEventListener('click', async (e) => {
             const video = e.target.closest('video');
+            const videoWrapper = e.target.closest('.panel-image-wrapper, .showcase-video-wrapper');
             const heroButton = e.target.closest('#hero-demo-button');
             
             // Handle hero demo button click
@@ -1311,12 +1452,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Handle video click
-            if (video && !isModalOpen) {
+            // Handle video wrapper or video click
+            if ((videoWrapper || video) && !isModalOpen) {
                 e.preventDefault();
                 
+                // Get video element
+                const videoElement = video || videoWrapper?.querySelector('video');
+                
+                if (!videoElement) return;
+                
                 // Get YouTube ID from data attribute
-                const youtubeId = video.dataset.youtubeId;
+                const youtubeId = videoElement.dataset.youtubeId;
                 
                 if (!youtubeId) {
                     console.warn('No YouTube ID found for video');
@@ -1560,6 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMoreInfoToggles();
     initPlatformTabs();
     initProductShowcase();
+    initBenefitsSlider();
     initWalkthroughSlider();
     initFaqAccordion();
     initContactForm();
