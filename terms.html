@@ -26,6 +26,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet"> 
     
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Ensure dark mode is applied immediately to prevent flash of light mode
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script src="app.js" type="module" defer></script>
 </head>
 <body>

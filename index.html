@@ -2,7 +2,10 @@
 <html lang="en" data-theme="dark">  
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BlueKnight | AI-Driven Platform for M&A Advisors</title>
     <meta name="description" content="BlueKnight is an AI-driven platform for M&A advisors - backed by an exclusive network of dealmakers. Supercharge your deal flow.">
 
@@ -25,6 +28,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Ensure dark mode is applied immediately to prevent flash of light mode
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script src="https://www.youtube.com/iframe_api" async></script>
     <script src="app.js" type="module" defer></script>
 </head>
@@ -365,7 +375,7 @@
                             </svg>
                         </div>
                         <h3>Precision Research in Minutes</h3>
-                        <p>Launch buyer or origination research in under five minutes with outputs that would take days to build manually.</p>
+                        <!-- <p>Launch buyer or origination research in under five minutes with outputs that would take days to build manually.</p> -->
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">
@@ -375,7 +385,7 @@
                             </svg>
                         </div>
                         <h3>Contextual Results, Not Generic Lists</h3>
-                        <p>Every match, from deals to buyers, is ranked based on strategic fit to your target, not loose keyword tags.</p>
+                        <!-- <p>Every match, from deals to buyers, is ranked based on strategic fit to your target, not loose keyword tags.</p> -->
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">
@@ -387,7 +397,7 @@
                             </svg>
                         </div>
                         <h3>M&A-Grade Validation, Not Just Data</h3>
-                        <p>Go beyond static lists. Test assumptions, compare buyers, and build rationale like a seasoned dealmaker.</p>
+                        <!-- <p>Go beyond static lists. Test assumptions, compare buyers, and build rationale like a seasoned dealmaker.</p> -->
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">
@@ -398,13 +408,13 @@
                             </svg>
                         </div>
                         <h3>Full Control, No Black Box</h3>
-                        <p>Customise every input, scoring, and output logic. You stay in charge. The platform works the way you do.</p>
+                        <!-- <p>Customise every input, scoring, and output logic. You stay in charge. The platform works the way you do.</p> -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="walkthrough" class="walkthrough-section">
+        <!-- <section id="walkthrough" class="walkthrough-section">
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Your Path to the Perfect Buyer</h2>
@@ -479,7 +489,7 @@
                     <div class="slider-pagination"></div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <section id="comparison" class="comparison-section">
             <div class="container">
@@ -575,6 +585,10 @@
 
         <section id="ai-copilot" class="ai-copilot-section">
             <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">AI-Powered Intelligence</h2>
+                    <p class="section-subtitle">Two powerful AI tools to accelerate your research and decision-making</p>
+                </div>
                 <div class="copilot-content-block">
                     <div class="panel-content-grid">
                         <div class="panel-text-content">

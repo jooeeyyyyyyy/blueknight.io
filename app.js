@@ -84,16 +84,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initScrollAnimations = () => {
         const animatedSections = document.querySelectorAll('main section');
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
+        
+        // Check if mobile device (viewport width <= 768px)
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // On mobile, immediately show all sections without animation for better performance
+            animatedSections.forEach(section => {
+                section.classList.add('is-visible');
+                // Disable transform transitions on mobile for smoother scrolling
+                section.style.transform = 'none';
             });
-        }, { threshold: 0.1 });
+        } else {
+            // On desktop, use scroll animations
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
 
-        animatedSections.forEach(section => observer.observe(section));
+            animatedSections.forEach(section => observer.observe(section));
+        }
     };
     
     const initPlatformTabs = () => {

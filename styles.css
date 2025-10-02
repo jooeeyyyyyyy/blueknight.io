@@ -687,8 +687,8 @@ section.is-visible > .container {
     }
     
     .benefit-card {
-        padding: var(--space-lg);
-        text-align: left;
+        padding: var(--space-xl);
+        text-align: center;
     }
     
     .benefit-number {
@@ -701,13 +701,13 @@ section.is-visible > .container {
     
     .benefit-card h3 {
         margin-bottom: var(--space-lg);
-        text-align: left;
+        text-align: center;
     }
     
     .benefit-card p {
         color: var(--color-text-muted);
         line-height: 1.6;
-        text-align: left;
+        text-align: center;
         max-width: none;
     }
     
@@ -2253,7 +2253,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 /* Benefits Grid */
 .benefits-grid { 
     display: grid; 
-    gap: var(--space-2xl); 
+    gap: var(--space-xl); 
     position: relative;
     margin-top: clamp(4rem, 10vh, 8rem);
 }
@@ -2266,7 +2266,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 
 @media (min-width: 1024px) { 
     .benefits-grid { 
-        grid-template-columns: repeat(2, 1fr); 
+        grid-template-columns: repeat(4, 1fr); 
     } 
 }
 
@@ -2278,7 +2278,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius-xl);
     box-shadow: var(--glass-shadow);
-    padding: var(--space-2xl);
+    padding: var(--space-xl);
     transition: all var(--transition-base);
     position: relative;
     overflow: hidden;
@@ -2389,7 +2389,9 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 }
 
 .benefit-card h3 { 
-    margin-bottom: var(--space-lg); 
+    margin-bottom: var(--space-lg);
+    font-size: clamp(0.95rem, 1rem + 0.25vw, 1.125rem);
+    font-weight: 600;
 }
 
 .benefit-card p { 
@@ -3078,48 +3080,91 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
         padding: var(--space-md);
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        /* Disable hover effects on mobile for better performance */
+        transform: none !important;
+        /* Add scroll hint shadow */
+        background: 
+            linear-gradient(90deg, var(--glass-bg-strong) 0%, transparent 20px),
+            linear-gradient(90deg, transparent calc(100% - 20px), var(--glass-bg-strong) 100%),
+            linear-gradient(90deg, rgba(0,0,0,.15) 0%, transparent 5px),
+            linear-gradient(270deg, rgba(0,0,0,.15) 0%, transparent 5px);
+        background-repeat: no-repeat;
+        background-attachment: local, local, scroll, scroll;
+        background-size: 20px 100%, 20px 100%, 5px 100%, 5px 100%;
+        background-position: 0 0, 100% 0, 0 0, 100% 0;
+        /* Improve scrolling performance */
+        will-change: scroll-position;
+        scroll-snap-type: none;
     }
     
     .comparison-table {
         font-size: 0.875rem;
-        min-width: 600px; /* Ensure table doesn't collapse too much */
+        min-width: 100%;
+        width: 100%;
+        table-layout: auto;
     }
     
     .comparison-table thead th {
-        padding: var(--space-md);
-        font-size: 0.95rem;
+        padding: var(--space-md) var(--space-sm);
+        font-size: 0.875rem;
         position: sticky;
         top: 0;
         background: var(--glass-bg-strong);
         backdrop-filter: var(--glass-blur);
         -webkit-backdrop-filter: var(--glass-blur);
         z-index: 10;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .comparison-table td {
-        padding: var(--space-md);
+        padding: var(--space-md) var(--space-sm);
+        font-size: 0.875rem;
+        line-height: 1.5;
     }
     
     .comparison-table .task-column {
-        width: 45%;
+        min-width: 200px;
+        max-width: 250px;
+        white-space: normal;
+        text-align: left;
+        padding-left: var(--space-sm);
+    }
+    
+    .comparison-table .task-cell {
+        font-size: 0.875rem;
+        padding-right: var(--space-md);
+        padding-left: var(--space-sm);
+        line-height: 1.5;
     }
     
     .comparison-table .manual-column,
     .comparison-table .blueknight-column {
-        width: 27.5%;
+        min-width: 85px;
+        width: auto;
+    }
+    
+    .comparison-table .manual-cell,
+    .comparison-table .blueknight-cell {
+        white-space: nowrap;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        padding: var(--space-md) var(--space-sm);
     }
     
     .blueknight-header {
         padding: var(--space-xs) var(--space-md);
-        font-size: 0.875rem;
-    }
-    
-    .comparison-table .blueknight-cell {
-        font-size: 1rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
     }
     
     .comparison-cta {
         margin-top: var(--space-xl);
+    }
+    
+    /* Disable row hover effects on mobile for better performance */
+    .comparison-table tbody tr:hover {
+        background: transparent;
     }
 }
 
@@ -4247,4 +4292,138 @@ video:fullscreen::-webkit-media-controls-panel {
     width: 100%;
     position: relative;
     z-index: 1;
+}
+
+/* ============================================ */
+/* Mobile Performance Optimizations             */
+/* ============================================ */
+@media (max-width: 768px) {
+    /* Disable scroll animations on mobile for better performance */
+    main section > .container {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    
+    /* Reduce motion for better mobile performance */
+    * {
+        animation-duration: 0.5s !important;
+        transition-duration: 0.2s !important;
+    }
+    
+    /* Optimize scrolling performance */
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeSpeed;
+    }
+    
+    /* Disable hover effects on mobile */
+    .glass-card:hover,
+    .benefit-card:hover,
+    .stat-card:hover,
+    .technology-item:hover,
+    .problem-point:hover,
+    .walkthrough-step:hover,
+    .quote-figure:hover {
+        transform: none !important;
+        box-shadow: var(--glass-shadow) !important;
+    }
+    
+    /* Optimize video performance on mobile */
+    video {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    
+    /* Improve touch target sizes */
+    button,
+    a,
+    .tab-button,
+    .slider-button,
+    .pagination-dot {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Optimize modal animations on mobile */
+    .video-modal-content,
+    .contact-modal-content {
+        transition: transform 0.3s ease-out !important;
+    }
+    
+    /* Better mobile scrolling for sliders */
+    .tabs-nav,
+    .walkthrough-slider {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        overscroll-behavior-x: contain;
+    }
+    
+    /* Reduce backdrop blur on mobile for better performance */
+    .glass-card,
+    .glass-strong,
+    .comparison-table-wrapper,
+    .stat-card {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+    
+    /* Optimize AI chat animations on mobile */
+    .ai-chat-message {
+        animation-duration: 0.3s !important;
+    }
+    
+    /* Better spacing for mobile readability */
+    .section-title {
+        font-size: clamp(1.75rem, 6vw, 2.5rem);
+        line-height: 1.2;
+    }
+    
+    .section-subtitle {
+        font-size: clamp(1rem, 4vw, 1.25rem);
+        line-height: 1.6;
+    }
+    
+    /* Optimize hero section for mobile */
+    .hero-section {
+        min-height: 70vh;
+    }
+    
+    /* Better button sizing on mobile */
+    .button {
+        padding: var(--space-md) var(--space-xl);
+        font-size: 1rem;
+        min-height: 48px;
+    }
+    
+    .button-large {
+        padding: var(--space-lg) var(--space-2xl);
+        font-size: 1.0625rem;
+        min-height: 52px;
+    }
+}
+
+/* Additional optimizations for very small screens */
+@media (max-width: 390px) {
+    .comparison-table .task-column {
+        min-width: 160px;
+        max-width: 180px;
+    }
+    
+    .comparison-table .manual-column,
+    .comparison-table .blueknight-column {
+        min-width: 70px;
+    }
+    
+    .section-title {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+    }
 }
