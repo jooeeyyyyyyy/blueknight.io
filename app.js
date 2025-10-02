@@ -110,6 +110,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    const initMoreInfoToggles = () => {
+        const toggles = document.querySelectorAll('.more-info-toggle');
+        
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                const content = toggle.nextElementSibling;
+                
+                if (!content || !content.classList.contains('more-info-content')) return;
+                
+                // Toggle the expanded state
+                toggle.setAttribute('aria-expanded', !isExpanded);
+                
+                if (isExpanded) {
+                    content.setAttribute('hidden', '');
+                } else {
+                    content.removeAttribute('hidden');
+                }
+            });
+        });
+    };
+
     const initPlatformTabs = () => {
         const tabComponents = document.querySelectorAll('.tabs-component');
         if (tabComponents.length === 0) return;
@@ -118,14 +140,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const tabList = component.querySelector('[role="tablist"]');
             const tabs = Array.from(component.querySelectorAll('[role="tab"]'));
             const panels = Array.from(component.querySelectorAll('[role="tabpanel"]'));
+            const panelsContainer = component.querySelector('.tab-panels');
             const prevButton = component.querySelector('.tabs-nav-button.prev');
             const nextButton = component.querySelector('.tabs-nav-button.next');
             const sliderPrevButton = component.querySelector('.slider-button.prev');
             const sliderNextButton = component.querySelector('.slider-button.next');
             const paginationContainer = component.querySelector('.slider-pagination');
             let paginationDots = [];
+            let isDragging = false;
+            let startX = 0;
+            let scrollLeft = 0;
 
             if (!tabList || tabs.length === 0) return;
+
+            const isMobile = () => window.innerWidth <= 1023;
+
+            // Update panels visibility based on viewport
+            const updatePanelsVisibility = () => {
+                if (isMobile()) {
+                    panels.forEach(panel => panel.hidden = false);
+                } else {
+                    const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+                    panels.forEach((panel, index) => {
+                        panel.hidden = index !== currentIndex;
+                    });
+                }
+            };
 
             // Create pagination dots
             if (paginationContainer) {
@@ -134,10 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     dot.classList.add('pagination-dot');
                     dot.setAttribute('aria-label', `Go to feature ${index + 1}`);
                     dot.addEventListener('click', () => {
-                        const targetTab = tabs[index];
-                        const currentTab = tabList.querySelector('[aria-selected="true"]');
-                        if (targetTab !== currentTab) {
-                            switchTab(currentTab, targetTab);
+                        if (isMobile()) {
+                            scrollToPanel(index);
+                        } else {
+                            const targetTab = tabs[index];
+                            const currentTab = tabList.querySelector('[aria-selected="true"]');
+                            if (targetTab !== currentTab) {
+                                switchTab(currentTab, targetTab);
+                            }
                         }
                     });
                     paginationContainer.appendChild(dot);
@@ -157,6 +201,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
+            const scrollToPanel = (index) => {
+                if (!panelsContainer || !isMobile()) return;
+                const panel = panels[index];
+                if (!panel) return;
+
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                
+                // Update active tab
+                tabs.forEach((tab, i) => {
+                    if (i === index) {
+                        tab.setAttribute('aria-selected', 'true');
+                        tab.removeAttribute('tabindex');
+                    } else {
+                        tab.removeAttribute('aria-selected');
+                        tab.setAttribute('tabindex', '-1');
+                    }
+                });
+                
+                updatePagination();
+            };
+
+            const detectVisiblePanel = () => {
+                if (!isMobile() || !panelsContainer) return;
+
+                const containerRect = panelsContainer.getBoundingClientRect();
+                const containerCenter = containerRect.left + containerRect.width / 2;
+
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+
+                panels.forEach((panel, index) => {
+                    const panelRect = panel.getBoundingClientRect();
+                    const panelCenter = panelRect.left + panelRect.width / 2;
+                    const distance = Math.abs(containerCenter - panelCenter);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = index;
+                    }
+                });
+
+                const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+                if (closestIndex !== currentIndex) {
+                    tabs[currentIndex].removeAttribute('aria-selected');
+                    tabs[currentIndex].setAttribute('tabindex', '-1');
+                    tabs[closestIndex].setAttribute('aria-selected', 'true');
+                    tabs[closestIndex].removeAttribute('tabindex');
+                    updatePagination();
+                }
+            };
+
             const switchTab = (oldTab, newTab) => {
                 newTab.focus();
                 newTab.removeAttribute('tabindex');
@@ -164,6 +259,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 oldTab.removeAttribute('aria-selected');
                 oldTab.setAttribute('tabindex', '-1');
                 
+                if (isMobile()) {
+                    const newIndex = tabs.indexOf(newTab);
+                    scrollToPanel(newIndex);
+                    return;
+                }
+
                 const oldPanelId = oldTab.getAttribute('aria-controls');
                 const newPanelId = newTab.getAttribute('aria-controls');
                 const oldPanel = component.querySelector(`#${oldPanelId}`);
@@ -208,6 +309,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 newTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 updatePagination();
             };
+
+            // Drag functionality for mobile slider
+            if (panelsContainer) {
+                panelsContainer.addEventListener('mousedown', (e) => {
+                    if (!isMobile()) return;
+                    isDragging = true;
+                    panelsContainer.classList.add('is-dragging');
+                    startX = e.pageX - panelsContainer.offsetLeft;
+                    scrollLeft = panelsContainer.scrollLeft;
+                });
+
+                panelsContainer.addEventListener('touchstart', (e) => {
+                    if (!isMobile()) return;
+                    isDragging = true;
+                    startX = e.touches[0].pageX - panelsContainer.offsetLeft;
+                    scrollLeft = panelsContainer.scrollLeft;
+                }, { passive: true });
+
+                panelsContainer.addEventListener('mousemove', (e) => {
+                    if (!isDragging || !isMobile()) return;
+                    e.preventDefault();
+                    const x = e.pageX - panelsContainer.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    panelsContainer.scrollLeft = scrollLeft - walk;
+                });
+
+                panelsContainer.addEventListener('touchmove', (e) => {
+                    if (!isDragging || !isMobile()) return;
+                    const x = e.touches[0].pageX - panelsContainer.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    panelsContainer.scrollLeft = scrollLeft - walk;
+                }, { passive: true });
+
+                const endDrag = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        panelsContainer.classList.remove('is-dragging');
+                        setTimeout(detectVisiblePanel, 150);
+                    }
+                };
+
+                panelsContainer.addEventListener('mouseup', endDrag);
+                panelsContainer.addEventListener('mouseleave', endDrag);
+                panelsContainer.addEventListener('touchend', endDrag);
+
+                // Detect scroll end on mobile
+                let scrollTimeout;
+                panelsContainer.addEventListener('scroll', () => {
+                    if (!isMobile()) return;
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(detectVisiblePanel, 150);
+                });
+            }
 
             tabList.addEventListener('click', e => {
                 const clickedTab = e.target.closest('[role="tab"]');
@@ -261,21 +415,40 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sliderPrevButton && sliderNextButton) {
                 sliderPrevButton.addEventListener('click', () => {
                     const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
-                    if (currentIndex > 0) {
-                        switchTab(tabs[currentIndex], tabs[currentIndex - 1]);
+                    if (isMobile()) {
+                        if (currentIndex > 0) {
+                            scrollToPanel(currentIndex - 1);
+                        }
+                    } else {
+                        if (currentIndex > 0) {
+                            switchTab(tabs[currentIndex], tabs[currentIndex - 1]);
+                        }
                     }
                 });
 
                 sliderNextButton.addEventListener('click', () => {
                     const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
-                    if (currentIndex < tabs.length - 1) {
-                        switchTab(tabs[currentIndex], tabs[currentIndex + 1]);
+                    if (isMobile()) {
+                        if (currentIndex < tabs.length - 1) {
+                            scrollToPanel(currentIndex + 1);
+                        }
+                    } else {
+                        if (currentIndex < tabs.length - 1) {
+                            switchTab(tabs[currentIndex], tabs[currentIndex + 1]);
+                        }
                     }
                 });
             }
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                updatePanelsVisibility();
+            });
             
-            // Initialize pagination and first video
+            // Initialize
             updatePagination();
+            updatePanelsVisibility();
+            
             const firstPanel = component.querySelector('[role="tabpanel"]:not([hidden])');
             if (firstPanel) {
                 const firstVideo = firstPanel.querySelector('video');
@@ -1384,6 +1557,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileNav();
     initThemeToggle();
     initScrollAnimations();
+    initMoreInfoToggles();
     initPlatformTabs();
     initProductShowcase();
     initWalkthroughSlider();
