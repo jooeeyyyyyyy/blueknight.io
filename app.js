@@ -39,13 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const initMobileNav = () => {
         const navToggle = document.querySelector('.header-mobile .nav-toggle');
         const mobileNavPanel = document.getElementById('mobile-nav-panel');
+        const header = document.querySelector('.site-header');
 
-        if (!navToggle || !mobileNavPanel) return;
+        if (!navToggle || !mobileNavPanel || !header) return;
 
         navToggle.addEventListener('click', () => {
             const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
             navToggle.setAttribute('aria-expanded', !isExpanded);
             mobileNavPanel.classList.toggle('is-open');
+            header.classList.toggle('nav-open');
             document.body.style.overflow = !isExpanded ? 'hidden' : '';
         });
 
@@ -54,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.tagName === 'A') {
                 navToggle.setAttribute('aria-expanded', 'false');
                 mobileNavPanel.classList.remove('is-open');
+                header.classList.remove('nav-open');
                 document.body.style.overflow = '';
             }
         });
@@ -1498,7 +1501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const initAiChat = () => {
         const chatContainers = document.querySelectorAll('.ai-chat-container');
-        const aiSection = document.querySelector('.ai-copilot-section');
+        const aiSection = document.querySelector('.ai-knights-section');
         
         if (chatContainers.length === 0) return;
 
@@ -1507,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Chat conversations for different contexts
         const conversations = {
-            'copilot-1': [
+            'knights-1': [
                 { type: 'user', text: 'Help me identify strategic buyers for a B2B SaaS company with $15M ARR in the logistics space.' },
                 { type: 'ai', text: 'I can help with that. Let me break this down into a few steps:\n\n1. First, I\'ll analyze comparable transactions to understand valuation trends\n2. Then identify strategic buyers with complementary offerings\n3. Finally, surface financial sponsors with relevant portfolio companies\n\nShall we start with precedent deal analysis?' },
                 { type: 'user', text: 'Yes, show me relevant comps.' },
@@ -1542,7 +1545,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add 10 second delay for the second chat (playground-1)
             const startDelay = chatId === 'playground-1' ? 7300 : 0;
-            const isFirstChat = chatId === 'copilot-1';
+            const isFirstChat = chatId === 'knights-1';
 
             const createMessageElement = (type) => {
                 const messageDiv = document.createElement('div');
@@ -1680,8 +1683,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (entry.isIntersecting && !sectionInView) {
                         sectionInView = true;
                         // Start the first chat immediately
-                        if (chatStartFunctions['copilot-1']) {
-                            chatStartFunctions['copilot-1']();
+                        if (chatStartFunctions['knights-1']) {
+                            chatStartFunctions['knights-1']();
                         }
                         // Start the second chat with its delay (10 seconds after section is visible)
                         if (chatStartFunctions['playground-1']) {
