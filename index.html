@@ -43,10 +43,6 @@
     <header class="site-header">
         <div class="container">
             <div class="header-mobile">
-                <button class="theme-toggle" aria-label="Toggle light and dark theme">
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                </button>
                 <a href="index.html" class="logo" aria-label="BlueKnight Home">
                     <img src="assets/logo-light.svg" alt="BlueKnight Logo" class="logo-img">
                 </a>
@@ -72,10 +68,6 @@
                     </ul>
                 </nav>
                 <div class="header-actions">
-                    <button class="theme-toggle" aria-label="Toggle light and dark theme">
-                        <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                        <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                    </button>
                     <a href="#contact" class="button button-primary">Get in touch</a>
                 </div>
             </div>
@@ -91,6 +83,7 @@
             <li><a href="#ai-knights">AI Knights</a></li>
             <li><a href="#technology">Technology</a></li>
             <li><a href="#faq">FAQ</a></li>
+            <li class="mobile-nav-cta"><a href="#contact" class="button button-primary">Get in touch</a></li>
         </ul>
     </div>
 
@@ -262,7 +255,9 @@
                             <button role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" class="tab-button" tabindex="-1">Precedent Deal & Valuation Engine</button>
                             <button role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" class="tab-button" tabindex="-1">3-Way Buyer Discovery</button>
                             <button role="tab" aria-selected="false" aria-controls="panel-4" id="tab-4" class="tab-button" tabindex="-1">M&A-Grade Intelligence</button>
+                            <!-- Contact Finder disabled for now 
                             <button role="tab" aria-selected="false" aria-controls="panel-5" id="tab-5" class="tab-button" tabindex="-1">Contact Finder</button>
+                            -->
                         </div>
                         <button class="tabs-nav-button next" aria-label="Next Feature">
                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -364,6 +359,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Contact Finder disabled for now 
                         <div id="panel-5" role="tabpanel" tabindex="0" aria-labelledby="tab-5" class="tab-panel" hidden>
                             <div class="panel-content-grid">
                                 <div class="panel-image-wrapper">
@@ -387,6 +383,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                     <div class="slider-controls">
                         <button class="slider-button prev" aria-label="Previous Feature">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -986,7 +983,13 @@
                         <a href="privacy.html">Privacy Policy</a>
                     </nav>
                 </div>
-                <a href="#top" class="back-to-top">Back to top ↑</a>
+                <div class="footer-bottom-right">
+                    <button class="theme-toggle" aria-label="Toggle light and dark theme">
+                        <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <a href="#top" class="back-to-top">Back to top ↑</a>
+                </div>
             </div>
         </div>
     </footer>
