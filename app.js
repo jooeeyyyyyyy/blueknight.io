@@ -923,24 +923,60 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const submitButton = form.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
             submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
+            submitButton.textContent = 'Sending...';
             statusEl.textContent = '';
             statusEl.className = '';
 
+            // Collect form data
+            const formData = {
+                name: form.querySelector('#name').value,
+                email: form.querySelector('#email').value,
+                company: form.querySelector('#company').value || 'Not provided',
+                message: form.querySelector('#message').value
+            };
+
+            // Set reply-to
+            document.getElementById('email-reply').value = formData.email;
+
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                statusEl.textContent = "Thank you! We'll be in touch shortly.";
-                statusEl.className = 'success';
-                form.reset();
+                // Using Formspree with your endpoint
+                const response = await fetch('https://formspree.io/f/xblzqbbb', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        company: formData.company,
+                        message: formData.message,
+                        _replyto: formData.email,
+                        _subject: 'Blueknight request',
+                        _autoresponse: 'Thank you for contacting BlueKnight! We\'ve received your message and will get back to you within 24 hours.'
+                    })
+                });
+
+                if (response.ok) {
+                    statusEl.textContent = '✓ Thank you! Your message has been sent successfully. We\'ll get back to you within 24 hours.';
+                    statusEl.className = 'success';
+                    form.reset();
+                    
+                    // Scroll to success message
+                    statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to send message');
+                }
             } catch (error) {
                 console.error('Form submission error:', error);
-                statusEl.textContent = 'An error occurred. Please try again later.';
+                statusEl.textContent = 'Sorry, there was an error sending your message. Please try again or email us directly at info@blueknight.io';
                 statusEl.className = 'error';
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Schedule a Demo';
+                submitButton.textContent = originalButtonText;
             }
         });
     };
@@ -953,7 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!modal || !modalForm) return;
 
-        // Form validation function
+        // Form validation
         const validateField = (field) => {
             const parent = field.closest('.form-group');
             const errorEl = parent.querySelector('.error-message');
@@ -1018,7 +1054,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Close button
-        closeButton.addEventListener('click', closeModal);
+        if (closeButton) {
+            closeButton.addEventListener('click', closeModal);
+        }
 
         // Close on backdrop click
         modal.addEventListener('click', (e) => {
@@ -1062,29 +1100,62 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const submitButton = modalForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
             submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
+            submitButton.textContent = 'Sending...';
             statusEl.textContent = '';
             statusEl.className = '';
 
+            // Collect form data
+            const formData = {
+                name: modalForm.querySelector('#name-modal').value,
+                email: modalForm.querySelector('#email-modal').value,
+                company: modalForm.querySelector('#company-modal').value || 'Not provided',
+                message: modalForm.querySelector('#message-modal').value
+            };
+
+            // Set reply-to
+            document.getElementById('email-modal-reply').value = formData.email;
+
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                statusEl.textContent = "Thank you! We'll be in touch shortly.";
-                statusEl.className = 'success';
-                modalForm.reset();
-                
-                // Close modal after success
-                setTimeout(() => {
-                    closeModal();
-                }, 2000);
+                // Using Formspree with your endpoint
+                const response = await fetch('https://formspree.io/f/xblzqbbb', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        company: formData.company,
+                        message: formData.message,
+                        _replyto: formData.email,
+                        _subject: 'Blueknight request',
+                        _autoresponse: 'Thank you for contacting BlueKnight! We\'ve received your message and will get back to you within 24 hours.'
+                    })
+                });
+
+                if (response.ok) {
+                    statusEl.textContent = '✓ Thank you! Your message has been sent successfully. We\'ll get back to you within 24 hours.';
+                    statusEl.className = 'success';
+                    modalForm.reset();
+                    
+                    // Close modal after success
+                    setTimeout(() => {
+                        closeModal();
+                    }, 2500);
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to send message');
+                }
             } catch (error) {
                 console.error('Form submission error:', error);
-                statusEl.textContent = 'An error occurred. Please try again later.';
+                statusEl.textContent = 'Sorry, there was an error sending your message. Please try again or email us directly at info@blueknight.io';
                 statusEl.className = 'error';
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Schedule a Demo';
+                submitButton.textContent = originalButtonText;
             }
         });
     };
@@ -1511,21 +1582,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chat conversations for different contexts
         const conversations = {
             'knights-1': [
-                { type: 'user', text: 'Help me identify strategic buyers for a B2B SaaS company with $15M ARR in the logistics space.' },
-                { type: 'ai', text: 'I can help with that. Let me break this down into a few steps:\n\n1. First, I\'ll analyze comparable transactions to understand valuation trends\n2. Then identify strategic buyers with complementary offerings\n3. Finally, surface financial sponsors with relevant portfolio companies\n\nShall we start with precedent deal analysis?' },
-                { type: 'user', text: 'Yes, show me relevant comps.' },
-                { type: 'ai', text: 'I found 23 highly relevant transactions. The top matches include:\n\n• Project44 acquisition by Emergence ($700M, 2021)\n• FourKites Series E ($50M ARR, 8.5x multiple)\n• Convoy acquisition by Flexport ($250M)\n\nAverage EV/Revenue multiple: 7.2x\nMedian enterprise value: $420M\n\nWould you like me to dive deeper into any of these?' }
+                { type: 'user', text: 'What are the most compelling reasons for Litera to acquire the Target.' },
+                { type: 'ai', text: 'Core rationale: add eSignature and agreement management to Litera\'s drafting and review tools to create an end-to-end contract-lifecycle platform, unlock immediate cross-sell into law-firm and corporate accounts, and deliver a single-vendor workflow from creation through execution to post-sign analytics.' },
+                { type: 'user', text: 'Core strategic themes of Litera\'s most recent acquisitions?' },
+                { type: 'ai', text: 'Litera\'s M&A is a disciplined add on strategy acquiring legal-tech capabilities in AI-driven pricing, knowledge management, document extraction and contract analytics to deepen penetration of law-firm and corporate-legal clients and build a unified platform across its US/UK footprint' }
             ],
             'playground-1': [
-                { type: 'user', text: 'What\'s Vista Equity Partners\' acquisition strategy in vertical SaaS?' },
-                { type: 'ai', text: 'Based on analysis of Vista\'s 47 vertical SaaS transactions:\n\n**Key Focus Areas:**\n• Financial services software (32% of deals)\n• Healthcare IT platforms (21%)\n• Supply chain/logistics tech (18%)\n\n**Typical Deal Profile:**\n• ARR: $20M-$100M\n• Growth rate: 25%+ YoY\n• EBITDA margins: 20%+\n\nThey prioritize mission-critical software with recurring revenue and strong retention metrics.' },
-                { type: 'user', text: 'Have they shown interest in logistics tech recently?' },
-                { type: 'ai', text: 'Yes, Vista has been very active in logistics:\n\n**Recent Activity (2023-2024):**\n• Acquired Fortrex (TMS platform, $45M ARR)\n• Invested $200M in Transporeon\n• Portfolio company BluJay Solutions acquired 3 competitors\n\n**Investment Thesis:**\nFocusing on cloud-native platforms that digitize supply chain operations. Average check size: $150-400M.\n\nVista would likely be interested in targets with strong API integrations and enterprise customer bases.' }
+                { type: 'user', text: 'What can I research or find on this platform?' },
+                { type: 'ai', text: 'All in one place, you can search and analyze M&A transactions, identify strategic and financial buyers, and find comparable companies to support both buy-side and sell-side mandates. Further, our People Finder helps you identify key decision-makers with verified details to accelerate outreach and deal discussions.' },
+                { type: 'user', text: 'How do I get the best results from the platform?' },
+                { type: 'ai', text: 'Choose between 3 search levels: Open Search for quick, database-wide queries, Guided Search for company-specific targeting, and Strategic Search for advanced, multi-criteria buyer and target analysis. These give you flexibility from fast lookups to in-depth deal research. M&A-specific AI tools throughout the platform further streamline research and outreach.' }
             ]
         };
 
         // Typing speed settings
-        const TYPING_SPEED = 7; // ms per character
+        const TYPING_SPEED = 6; // ms per character
         const PAUSE_AFTER_MESSAGE = 900; // ms
         const PAUSE_BEFORE_RESTART = 35000; // ms - 40 seconds before restart
         const FADE_OUT_DURATION = 1200; // ms - fade out animation duration
@@ -1544,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let hasStarted = false;
             
             // Add 10 second delay for the second chat (playground-1)
-            const startDelay = chatId === 'playground-1' ? 7300 : 0;
+            const startDelay = chatId === 'playground-1' ? 3300 : 0;
             const isFirstChat = chatId === 'knights-1';
 
             const createMessageElement = (type) => {
@@ -1553,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const avatar = document.createElement('div');
                 avatar.className = 'ai-chat-avatar';
-                avatar.textContent = type === 'user' ? 'U' : 'AI';
+                avatar.textContent = type === 'user' ? 'YOU' : 'AI';
                 
                 const bubble = document.createElement('div');
                 bubble.className = 'ai-chat-bubble';
@@ -1700,6 +1771,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('AI chat interfaces initialized');
     };
+
+    const initCookieBanner = () => {
+        const cookieBanner = document.getElementById('cookie-banner');
+        const acceptButton = document.getElementById('cookie-accept');
+        const declineButton = document.getElementById('cookie-decline');
+        
+        if (!cookieBanner) return;
+
+        // Check if user has already made a choice
+        const cookieConsent = localStorage.getItem('cookieConsent');
+        
+        if (!cookieConsent) {
+            // Show banner after a short delay
+            setTimeout(() => {
+                cookieBanner.classList.add('show');
+                cookieBanner.setAttribute('aria-hidden', 'false');
+            }, 1000);
+        }
+
+        // Accept cookies
+        if (acceptButton) {
+            acceptButton.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'accepted');
+                closeBanner();
+            });
+        }
+
+        // Decline cookies
+        if (declineButton) {
+            declineButton.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'declined');
+                closeBanner();
+            });
+        }
+
+        function closeBanner() {
+            cookieBanner.classList.remove('show');
+            cookieBanner.setAttribute('aria-hidden', 'true');
+            
+            // Remove banner from DOM after animation
+            setTimeout(() => {
+                cookieBanner.style.display = 'none';
+            }, 300);
+        }
+    };
     
     // Initialize all modules
     initHeader();
@@ -1717,4 +1833,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initAiShowcaseAnimations();
     initVideoSystem();
     initAiChat();
+    initCookieBanner();
 });

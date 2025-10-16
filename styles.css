@@ -2400,19 +2400,20 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     }
 }
 
-/* Hide arrow buttons and center tabs on desktop when all tabs fit */
+/* Desktop navigation - keep arrows visible for 5 tabs */
 @media (min-width: 1024px) {
     .tabs-nav-container {
-        justify-content: center;
-    }
-    
-    .tabs-nav-button {
-        display: none;
+        gap: var(--space-md);
     }
     
     .tabs-nav {
-        overflow: visible;
-        justify-content: center;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+    }
+    
+    .tabs-nav-button {
+        display: grid;
+        place-items: center;
     }
 }
 
@@ -3684,7 +3685,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: 0.875rem;
+    font-size: 0.675rem;
     font-weight: 600;
     background: var(--glass-bg-strong);
     backdrop-filter: var(--glass-blur);
@@ -3838,7 +3839,7 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     .ai-chat-avatar {
         width: 28px;
         height: 28px;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
     }
     
     .ai-chat-bubble {
@@ -4709,6 +4710,327 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 }
 .faq-question[aria-expanded="true"] .faq-icon::after { transform: translate(-50%, -50%) rotate(0deg); }
 
+/* Calendar Scheduling */
+.calendar-scheduling-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.calendar-scheduling-modal {
+    width: 100%;
+    padding: var(--space-2xl);
+    animation: fadeInSlide 0.4s ease-out;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+}
+
+.calendar-header .section-title {
+    margin-bottom: var(--space-lg);
+    color: var(--color-text);
+}
+
+.calendar-header .section-subtitle {
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.calendar-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 700px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+}
+
+.calendar-iframe-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.03) 0%, 
+        rgba(168, 85, 247, 0.03) 100%);
+    pointer-events: none;
+    border-radius: var(--border-radius-lg);
+    z-index: 1;
+}
+
+.calendar-iframe {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    min-height: 700px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: var(--color-bg);
+    z-index: 2;
+}
+
+/* Dark theme adjustments for iframe */
+[data-theme="dark"] .calendar-iframe {
+    filter: brightness(0.95) contrast(1.05);
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .calendar-iframe {
+    filter: brightness(1) contrast(1);
+}
+
+/* Modal-specific calendar styling */
+.calendar-modal-iframe {
+    min-height: 600px;
+    max-height: 70vh;
+}
+
+.calendar-modal-iframe .calendar-iframe {
+    height: 600px;
+    min-height: 600px;
+    max-height: 70vh;
+}
+
+.contact-modal-body .calendar-scheduling-modal {
+    padding: 0;
+}
+
+.contact-modal-body .contact-content {
+    margin-bottom: var(--space-2xl);
+}
+
+.back-to-form-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 auto;
+}
+
+.back-to-form-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.button-secondary {
+    background: var(--glass-bg);
+    color: var(--color-text);
+    border: 1px solid var(--glass-border);
+}
+
+.button-secondary:hover {
+    background: var(--glass-bg-strong);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Mobile optimization */
+@media (max-width: 767px) {
+    .calendar-scheduling-container {
+        padding: 0;
+    }
+    
+    .calendar-scheduling-modal {
+        padding: var(--space-xl) var(--space-md);
+    }
+    
+    .calendar-header {
+        margin-bottom: var(--space-2xl);
+    }
+    
+    .calendar-header .section-title {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+    }
+    
+    .calendar-iframe-wrapper {
+        min-height: 600px;
+        padding: var(--space-sm);
+        border-radius: var(--border-radius-md);
+    }
+    
+    .calendar-iframe {
+        height: 600px;
+        min-height: 600px;
+    }
+    
+    /* Modal calendar on mobile */
+    .calendar-modal-iframe {
+        min-height: 550px;
+        max-height: 65vh;
+        padding: var(--space-xs);
+    }
+    
+    .calendar-modal-iframe .calendar-iframe {
+        height: 550px;
+        min-height: 550px;
+        max-height: 65vh;
+    }
+    
+    .contact-modal-body {
+        padding: var(--space-xl) var(--space-md);
+    }
+    
+    .contact-modal-body .contact-content {
+        margin-bottom: var(--space-xl);
+    }
+    
+    .contact-modal-body .contact-content .section-title {
+        font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+}
+
+/* Tablet optimization */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .calendar-scheduling-container {
+        max-width: 900px;
+    }
+    
+    .calendar-iframe-wrapper {
+        min-height: 650px;
+        padding: var(--space-md);
+    }
+    
+    .calendar-iframe {
+        height: 650px;
+        min-height: 650px;
+    }
+}
+
+/* Desktop wide screens */
+@media (min-width: 1024px) {
+    .calendar-scheduling-container {
+        max-width: 1200px;
+    }
+    
+    .calendar-iframe-wrapper {
+        min-height: 750px;
+        padding: var(--space-xl);
+    }
+    
+    .calendar-iframe {
+        height: 750px;
+        min-height: 750px;
+    }
+}
+
+/* Extra wide screens */
+@media (min-width: 1400px) {
+    .calendar-scheduling-container {
+        max-width: 1400px;
+    }
+    
+    .calendar-iframe-wrapper {
+        min-height: 800px;
+    }
+    
+    .calendar-iframe {
+        height: 800px;
+        min-height: 800px;
+    }
+}
+
+/* Cookie Consent Banner */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-top: 1px solid var(--glass-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(100%);
+    transition: transform var(--transition-base);
+}
+
+.cookie-banner.show {
+    transform: translateY(0);
+}
+
+.cookie-banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xl);
+}
+
+.cookie-banner-text {
+    flex: 1;
+}
+
+.cookie-banner-text h3 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.cookie-banner-text p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.cookie-banner-text a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.cookie-banner-text a:hover {
+    color: var(--color-primary-hover);
+}
+
+.cookie-banner-actions {
+    display: flex;
+    gap: var(--space-md);
+    flex-shrink: 0;
+}
+
+.cookie-banner-actions .button {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 0.9375rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .cookie-banner-content {
+        flex-direction: column;
+        padding: var(--space-lg);
+        gap: var(--space-lg);
+    }
+    
+    .cookie-banner-text h3 {
+        font-size: 1rem;
+    }
+    
+    .cookie-banner-text p {
+        font-size: 0.875rem;
+    }
+    
+    .cookie-banner-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .cookie-banner-actions .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Contact */
 .contact-section { 
     text-align: center; 
@@ -4754,8 +5076,11 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 @media (min-width: 600px) {
     .contact-form { grid-template-columns: 1fr 1fr; }
     .contact-form .form-group:nth-child(3),
+    .contact-form .form-group:nth-child(4),
+    .contact-form .form-group-full,
     .contact-form button,
-    .contact-form #form-status { grid-column: 1 / -1; }
+    .contact-form #form-status,
+    .contact-form #form-status-modal { grid-column: 1 / -1; }
 }
 .form-group { 
     display: flex; 
@@ -4769,7 +5094,8 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     font-size: 0.95rem;
 }
 
-.form-group input { 
+.form-group input,
+.form-group textarea { 
     padding: var(--space-lg); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--border-radius-md); 
@@ -4783,12 +5109,20 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     box-shadow: var(--glass-shadow);
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
     color: var(--color-text-soft);
     opacity: 0.7;
 }
 
-.form-group input:focus { 
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus { 
     border-color: var(--color-primary); 
     box-shadow: var(--glass-shadow-hover), 0 0 0 4px var(--glass-glow); 
     outline: none; 
@@ -4796,7 +5130,8 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     transform: translateY(-1px);
 }
 
-.form-group.has-error input { 
+.form-group.has-error input,
+.form-group.has-error textarea { 
     border-color: #ef4444; 
     box-shadow: var(--glass-shadow), 0 0 0 4px rgba(239, 68, 68, 0.2);
 }
@@ -5152,6 +5487,8 @@ video:fullscreen::-webkit-media-controls-panel {
     }
     
     .contact-modal-body .contact-form .form-group:nth-child(3),
+    .contact-modal-body .contact-form .form-group:nth-child(4),
+    .contact-modal-body .contact-form .form-group-full,
     .contact-modal-body .contact-form button,
     .contact-modal-body .contact-form #form-status-modal {
         grid-column: 1 / -1;
