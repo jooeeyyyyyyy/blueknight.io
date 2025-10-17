@@ -1582,10 +1582,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chat conversations for different contexts
         const conversations = {
             'knights-1': [
-                { type: 'user', text: 'What are the most compelling reasons for Litera to acquire the Target.' },
+                { type: 'user', text: 'What are the most compelling reasons for Litera to acquire the Target?' },
                 { type: 'ai', text: 'Core rationale: add eSignature and agreement management to Litera\'s drafting and review tools to create an end-to-end contract-lifecycle platform, unlock immediate cross-sell into law-firm and corporate accounts, and deliver a single-vendor workflow from creation through execution to post-sign analytics.' },
                 { type: 'user', text: 'Core strategic themes of Litera\'s most recent acquisitions?' },
-                { type: 'ai', text: 'Litera\'s M&A is a disciplined add on strategy acquiring legal-tech capabilities in AI-driven pricing, knowledge management, document extraction and contract analytics to deepen penetration of law-firm and corporate-legal clients and build a unified platform across its US/UK footprint' }
+                { type: 'ai', text: 'Litera\'s M&A is a disciplined add on strategy acquiring legal-tech capabilities in AI-driven pricing, knowledge management, document extraction and contract analytics to deepen penetration of law-firm and corporate-legal clients and build a unified platform across its US/UK footprint.' }
             ],
             'playground-1': [
                 { type: 'user', text: 'What can I research or find on this platform?' },
