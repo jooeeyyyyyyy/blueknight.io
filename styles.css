@@ -1266,11 +1266,14 @@ html[data-theme="light"] {
     
     /* Problem highlight in light mode */
     .problem-highlight {
+        /*
         background: linear-gradient(135deg, rgba(220, 38, 38, 0.85), rgba(185, 28, 28, 0.9));
         border-color: rgba(220, 38, 38, 0.6);
+        
         box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25),
                     0 1px 2px rgba(15, 23, 42, 0.1),
                     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        */
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -2973,12 +2976,16 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
     display: inline-block;
     color: #ffffff !important;
     font-weight: 700;
+    /*
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.3));
+    */
     padding: 0.25rem 0.8rem;
     border-radius: 0.5rem;
+    /*
     border: 1px solid rgba(239, 68, 68, 0.45);
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2), 
                 inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    */
     -webkit-background-clip: padding-box !important;
     background-clip: padding-box !important;
     -webkit-text-fill-color: #ffffff !important;
@@ -5208,6 +5215,30 @@ html[data-theme="dark"] .client-logos img { filter: brightness(0) invert(1); }
 .footer-legal-nav { display: flex; gap: var(--space-lg); }
 .footer-legal-nav a { color: var(--color-text-muted); }
 .back-to-top { color: var(--color-text-muted); }
+
+.footer-credit {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+    text-align: right;
+}
+
+.footer-credit p {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+    margin: 0;
+}
+
+.footer-credit a {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.footer-credit a:hover {
+    color: var(--color-primary);
+}
 
 @media (min-width: 768px) {
     .footer-bottom { flex-direction: row; }
