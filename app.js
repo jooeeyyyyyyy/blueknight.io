@@ -48,7 +48,31 @@ document.addEventListener('DOMContentLoaded', () => {
             navToggle.setAttribute('aria-expanded', !isExpanded);
             mobileNavPanel.classList.toggle('is-open');
             header.classList.toggle('nav-open');
-            document.body.style.overflow = !isExpanded ? 'hidden' : '';
+            
+            // Prevent body scroll when menu is open
+            if (!isExpanded) {
+                const scrollY = window.scrollY;
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.dataset.scrollY = scrollY;
+            } else {
+                const scrollPosition = parseInt(document.body.dataset.scrollY || '0');
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.style.overflow = '';
+                delete document.body.dataset.scrollY;
+                
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        left: 0,
+                        behavior: 'instant'
+                    });
+                });
+            }
         });
 
         // Close menu when a link is clicked
@@ -57,7 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 navToggle.setAttribute('aria-expanded', 'false');
                 mobileNavPanel.classList.remove('is-open');
                 header.classList.remove('nav-open');
+                
+                // Restore scroll position
+                const scrollPosition = parseInt(document.body.dataset.scrollY || '0');
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
                 document.body.style.overflow = '';
+                delete document.body.dataset.scrollY;
+                
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        left: 0,
+                        behavior: 'instant'
+                    });
+                });
             }
         });
     };
@@ -1009,11 +1048,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return isValid;
         };
 
+        // Store scroll position
+        let scrollY = 0;
+
         // Open modal function
         const openModal = () => {
+            scrollY = window.scrollY;
             modal.classList.add('is-open');
             modal.setAttribute('aria-hidden', 'false');
+            
+            // Prevent body scroll
             document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.top = `-${scrollY}px`;
             
             // Focus first input after animation
             setTimeout(() => {
@@ -1026,7 +1074,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeModal = () => {
             modal.classList.remove('is-open');
             modal.setAttribute('aria-hidden', 'true');
+            
+            // Restore scroll position - must happen in correct order
+            const scrollPosition = scrollY;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
             document.body.style.overflow = '';
+            
+            // Use requestAnimationFrame to ensure scroll happens after body styles are removed
+            requestAnimationFrame(() => {
+                window.scrollTo({
+                    top: scrollPosition,
+                    left: 0,
+                    behavior: 'instant'
+                });
+            });
+            
             modalForm.reset();
             
             // Clear any error states
@@ -1206,6 +1270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let backgroundVideos = [];
         let youtubePlayer = null;
         let isYouTubeAPIReady = false;
+        let videoScrollY = 0;
 
         // Helper function to detect mobile devices
         const isMobileDevice = () => {
@@ -1350,10 +1415,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Set modal state
                 isModalOpen = true;
                 
+                // Store scroll position and prevent body scroll
+                videoScrollY = window.scrollY;
+                
                 // Show modal
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${videoScrollY}px`;
                 
                 // Wait for YouTube API if not ready
                 if (!isYouTubeAPIReady) {
@@ -1385,6 +1456,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${videoScrollY}px`;
                 playerContainer.innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: center; height: 400px; background: #000; color: white; text-align: center; border-radius: 12px;">
                         <div>
@@ -1423,7 +1497,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Hide modal
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
+                
+                // Restore scroll position - must happen in correct order
+                const scrollPosition = videoScrollY;
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
                 document.body.style.overflow = '';
+                
+                // Use requestAnimationFrame to ensure scroll happens after body styles are removed
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        left: 0,
+                        behavior: 'instant'
+                    });
+                });
                 
                 // Resume background videos after a short delay
                 setTimeout(() => {
